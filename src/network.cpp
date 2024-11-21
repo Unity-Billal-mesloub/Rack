@@ -126,7 +126,7 @@ json_t* requestJson(Method method, const std::string& url, json_t* dataJ, const 
 		curl_easy_setopt(curl, CURLOPT_POST, true);
 	}
 	else if (method == METHOD_PUT) {
-		curl_easy_setopt(curl, CURLOPT_PUT, true);
+		curl_easy_setopt(curl, CURLOPT_UPLOAD, true);
 	}
 	else if (method == METHOD_DELETE) {
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");

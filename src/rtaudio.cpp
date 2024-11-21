@@ -58,9 +58,8 @@ struct RtAudioDevice : audio::Device {
 		try {
 			// Query device ID
 			deviceInfo = rtAudio->getDeviceInfo(deviceId);
-			// if (!deviceInfo.probed) {
-			// 	throw Exception("Failed to query RtAudio %s device %d", RTAUDIO_API_NAMES.at(api).c_str(), deviceId);
-			// }
+			if (deviceInfo.ID == 0)
+				throw Exception("Failed to query RtAudio %s device %d", RTAUDIO_API_NAMES.at(api).c_str(), deviceId);
 
 			openStream();
 		}
@@ -72,7 +71,8 @@ struct RtAudioDevice : audio::Device {
 
 	~RtAudioDevice() {
 		closeStream();
-		delete rtAudio;
+		if (rtAudio)
+			delete rtAudio;
 	}
 
 	void openStream() {
@@ -225,7 +225,6 @@ struct RtAudioDriver : audio::Driver {
 	// deviceId -> Device
 	std::map<int, RtAudioDevice*> devices;
 	RtAudio* rtAudio = NULL;
-	// std::vector<RtAudio::DeviceInfo> deviceInfos;
 
 	RtAudioDriver(RtAudio::Api api) {
 		this->api = api;
@@ -236,19 +235,6 @@ struct RtAudioDriver : audio::Driver {
 		});
 
 		rtAudio->showWarnings(false);
-
-		// Cache DeviceInfos for performance and stability (especially for ASIO).
-		// if (api == RtAudio::WINDOWS_WASAPI || api == RtAudio::WINDOWS_ASIO || api == RtAudio::WINDOWS_DS) {
-		// 	int count = rtAudio->getDeviceCount();
-		// 	for (int deviceId = 0; deviceId < count; deviceId++) {
-		// 		RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
-		// 		INFO("Found RtAudio %s device %d: %s (%d in, %d out)", RTAUDIO_API_NAMES.at(api).c_str(), deviceId, deviceInfo.name.c_str(), deviceInfo.inputChannels, deviceInfo.outputChannels);
-		// 		deviceInfos.push_back(deviceInfo);
-		// 	}
-
-		// 	delete rtAudio;
-		// 	rtAudio = NULL;
-		// }
 	}
 
 	~RtAudioDriver() {
@@ -268,9 +254,6 @@ struct RtAudioDriver : audio::Driver {
 				deviceIds.push_back(id);
 			}
 		}
-		else {
-			// TODO
-		}
 		return deviceIds;
 	}
 
@@ -279,9 +262,6 @@ struct RtAudioDriver : audio::Driver {
 			RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
 			if (deviceInfo.ID > 0)
 				return deviceInfo.name;
-		}
-		else {
-			// TODO
 		}
 		return "";
 	}
@@ -292,9 +272,6 @@ struct RtAudioDriver : audio::Driver {
 			if (deviceInfo.ID > 0)
 				return deviceInfo.inputChannels;
 		}
-		else {
-			// TODO
-		}
 		return 0;
 	}
 
@@ -303,9 +280,6 @@ struct RtAudioDriver : audio::Driver {
 			RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
 			if (deviceInfo.ID > 0)
 				return deviceInfo.outputChannels;
-		}
-		else {
-			// TODO
 		}
 		return 0;
 	}

@@ -58,9 +58,9 @@ struct RtAudioDevice : audio::Device {
 		try {
 			// Query device ID
 			deviceInfo = rtAudio->getDeviceInfo(deviceId);
-			if (!deviceInfo.probed) {
-				throw Exception("Failed to query RtAudio %s device %d", RTAUDIO_API_NAMES.at(api).c_str(), deviceId);
-			}
+			// if (!deviceInfo.probed) {
+			// 	throw Exception("Failed to query RtAudio %s device %d", RTAUDIO_API_NAMES.at(api).c_str(), deviceId);
+			// }
 
 			openStream();
 		}
@@ -225,7 +225,7 @@ struct RtAudioDriver : audio::Driver {
 	// deviceId -> Device
 	std::map<int, RtAudioDevice*> devices;
 	RtAudio* rtAudio = NULL;
-	std::vector<RtAudio::DeviceInfo> deviceInfos;
+	// std::vector<RtAudio::DeviceInfo> deviceInfos;
 
 	RtAudioDriver(RtAudio::Api api) {
 		this->api = api;
@@ -238,17 +238,17 @@ struct RtAudioDriver : audio::Driver {
 		rtAudio->showWarnings(false);
 
 		// Cache DeviceInfos for performance and stability (especially for ASIO).
-		if (api == RtAudio::WINDOWS_WASAPI || api == RtAudio::WINDOWS_ASIO || api == RtAudio::WINDOWS_DS) {
-			int count = rtAudio->getDeviceCount();
-			for (int deviceId = 0; deviceId < count; deviceId++) {
-				RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
-				INFO("Found RtAudio %s device %d: %s (%d in, %d out)", RTAUDIO_API_NAMES.at(api).c_str(), deviceId, deviceInfo.name.c_str(), deviceInfo.inputChannels, deviceInfo.outputChannels);
-				deviceInfos.push_back(deviceInfo);
-			}
+		// if (api == RtAudio::WINDOWS_WASAPI || api == RtAudio::WINDOWS_ASIO || api == RtAudio::WINDOWS_DS) {
+		// 	int count = rtAudio->getDeviceCount();
+		// 	for (int deviceId = 0; deviceId < count; deviceId++) {
+		// 		RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
+		// 		INFO("Found RtAudio %s device %d: %s (%d in, %d out)", RTAUDIO_API_NAMES.at(api).c_str(), deviceId, deviceInfo.name.c_str(), deviceInfo.inputChannels, deviceInfo.outputChannels);
+		// 		deviceInfos.push_back(deviceInfo);
+		// 	}
 
-			delete rtAudio;
-			rtAudio = NULL;
-		}
+		// 	delete rtAudio;
+		// 	rtAudio = NULL;
+		// }
 	}
 
 	~RtAudioDriver() {
@@ -262,61 +262,50 @@ struct RtAudioDriver : audio::Driver {
 	}
 
 	std::vector<int> getDeviceIds() override {
-		int count = 0;
+		std::vector<int> deviceIds;
 		if (rtAudio) {
-			count = rtAudio->getDeviceCount();
+			for (unsigned int id : rtAudio->getDeviceIds()) {
+				deviceIds.push_back(id);
+			}
 		}
 		else {
-			count = deviceInfos.size();
+			// TODO
 		}
-
-		std::vector<int> deviceIds;
-		for (int i = 0; i < count; i++)
-			deviceIds.push_back(i);
 		return deviceIds;
 	}
 
 	std::string getDeviceName(int deviceId) override {
 		if (rtAudio) {
-			int count = rtAudio->getDeviceCount();
-			if (0 <= deviceId && deviceId < count) {
-				RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
+			RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
+			if (deviceInfo.ID > 0)
 				return deviceInfo.name;
-			}
 		}
 		else {
-			if (0 <= deviceId && deviceId < (int) deviceInfos.size())
-				return deviceInfos[deviceId].name;
+			// TODO
 		}
 		return "";
 	}
 
 	int getDeviceNumInputs(int deviceId) override {
 		if (rtAudio) {
-			int count = rtAudio->getDeviceCount();
-			if (0 <= deviceId && deviceId < count) {
-				RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
+			RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
+			if (deviceInfo.ID > 0)
 				return deviceInfo.inputChannels;
-			}
 		}
 		else {
-			if (0 <= deviceId && deviceId < (int) deviceInfos.size())
-				return deviceInfos[deviceId].inputChannels;
+			// TODO
 		}
 		return 0;
 	}
 
 	int getDeviceNumOutputs(int deviceId) override {
 		if (rtAudio) {
-			int count = rtAudio->getDeviceCount();
-			if (0 <= deviceId && deviceId < count) {
-				RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
+			RtAudio::DeviceInfo deviceInfo = rtAudio->getDeviceInfo(deviceId);
+			if (deviceInfo.ID > 0)
 				return deviceInfo.outputChannels;
-			}
 		}
 		else {
-			if (0 <= deviceId && deviceId < (int) deviceInfos.size())
-				return deviceInfos[deviceId].outputChannels;
+			// TODO
 		}
 		return 0;
 	}

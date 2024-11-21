@@ -139,34 +139,34 @@ CURL_FLAGS += --enable-http --disable-ftp --disable-file --disable-ldap --disabl
 CURL_FLAGS += --with-openssl="$(DEP_PATH)"
 CURL_FLAGS += --without-hyper --without-zlib --without-brotli --without-zstd --without-ca-fallback --without-ca-embed --without-libpsl --without-libgsasl --without-librtmp --without-winidn --without-apple-idn --without-libidn2 --without-nghttp2 --without-ngtcp2 --without-openssl-quic --without-nghttp3 --without-quiche --without-msh3 --without-libuv
 
-$(libcurl): | $(openssl) $(zstd) curl-8.10.0
+$(libcurl): | $(openssl) curl-8.10.0
 	cd curl-8.10.0 && PKG_CONFIG_PATH= $(CONFIGURE) $(CURL_FLAGS)
 	$(MAKE) -C curl-8.10.0
 	$(MAKE) -C curl-8.10.0 install
 
-zstd-1.4.5:
-	$(WGET) "https://github.com/facebook/zstd/releases/download/v1.4.5/zstd-1.4.5.tar.gz"
-	$(SHA256) zstd-1.4.5.tar.gz 98e91c7c6bf162bf90e4e70fdbc41a8188b9fa8de5ad840c401198014406ce9e
-	$(UNTAR) zstd-1.4.5.tar.gz
-	rm zstd-1.4.5.tar.gz
+zstd-1.5.6:
+	$(WGET) "https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz"
+	$(SHA256) zstd-1.5.6.tar.gz 8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1
+	$(UNTAR) zstd-1.5.6.tar.gz
+	rm zstd-1.5.6.tar.gz
 
-$(zstd): | zstd-1.4.5
-	cd zstd-1.4.5/build/cmake && $(CMAKE) -DZSTD_BUILD_PROGRAMS=ON -DZSTD_BUILD_SHARED=ON -DZSTD_BUILD_STATIC=ON -DZSTD_MULTITHREAD_SUPPORT=OFF .
-	$(MAKE) -C zstd-1.4.5/build/cmake
-	$(MAKE) -C zstd-1.4.5/build/cmake install
+$(zstd): | zstd-1.5.6
+	cd zstd-1.5.6/build/cmake && $(CMAKE) -DZSTD_BUILD_PROGRAMS=OFF -DZSTD_BUILD_SHARED=OFF -DZSTD_BUILD_STATIC=ON -DZSTD_BUILD_TESTS=OFF -DZSTD_MULTITHREAD_SUPPORT=OFF .
+	$(MAKE) -C zstd-1.5.6/build/cmake
+	$(MAKE) -C zstd-1.5.6/build/cmake install
 
-libarchive-3.4.3:
-	$(WGET) "https://github.com/libarchive/libarchive/releases/download/v3.4.3/libarchive-3.4.3.tar.gz" || $(WGET) "https://libarchive.org/downloads/libarchive-3.4.3.tar.gz"
-	$(SHA256) libarchive-3.4.3.tar.gz ee1e749213c108cb60d53147f18c31a73d6717d7e3d2481c157e1b34c881ea39
-	$(UNTAR) libarchive-3.4.3.tar.gz
-	rm libarchive-3.4.3.tar.gz
+libarchive-3.7.7:
+	$(WGET) "https://github.com/libarchive/libarchive/releases/download/v3.7.7/libarchive-3.7.7.tar.gz" || $(WGET) "https://libarchive.org/downloads/libarchive-3.7.7.tar.gz"
+	$(SHA256) libarchive-3.7.7.tar.gz 4cc540a3e9a1eebdefa1045d2e4184831100667e6d7d5b315bb1cbc951f8ddff
+	$(UNTAR) libarchive-3.7.7.tar.gz
+	rm libarchive-3.7.7.tar.gz
 
-$(libarchive): | $(zstd) libarchive-3.4.3
-	#cd libarchive-3.4.3 && $(CONFIGURE) --enable-shared=no --enable-static=yes --disable-bsdtar --disable-bsdcat --disable-bsdcpio --disable-posix-regex-lib --disable-xattr --disable-acl --without-zlib --without-bz2lib  --without-libb2 --without-iconv --without-lz4 --without-lzma --without-cng --without-openssl --without-xml2 --without-expat
-	cd libarchive-3.4.3 && mkdir -p build
-	cd libarchive-3.4.3/build && $(CMAKE) -DENABLE_ACL:BOOL=OFF -DENABLE_BZip2:BOOL=OFF -DENABLE_CAT:BOOL=OFF -DENABLE_CNG:BOOL=OFF -DENABLE_COVERAGE:BOOL=OFF -DENABLE_CPIO:BOOL=OFF -DENABLE_EXPAT:BOOL=OFF -DENABLE_ICONV:BOOL=OFF -DENABLE_LIBB2:BOOL=OFF -DENABLE_LIBXML2:BOOL=OFF -DENABLE_LZ4:BOOL=OFF -DENABLE_LZMA:BOOL=OFF -DENABLE_LZO:BOOL=OFF -DENABLE_MBEDTLS:BOOL=OFF -DENABLE_NETTLE:BOOL=OFF -DENABLE_OPENSSL:BOOL=OFF -DENABLE_TAR:BOOL=OFF -DENABLE_TEST:BOOL=OFF -DENABLE_WERROR:BOOL=OFF -DENABLE_XATTR:BOOL=OFF -DENABLE_ZLIB:BOOL=OFF -DENABLE_ZSTD:BOOL=ON -DZSTD_INCLUDE_DIR:PATH=$(DEP_PATH)/include -DBUILD_TESTING:BOOL=OFF ..
-	$(MAKE) -C libarchive-3.4.3/build
-	$(MAKE) -C libarchive-3.4.3/build install
+$(libarchive): | $(zstd) libarchive-3.7.7
+	#cd libarchive-3.7.7 && $(CONFIGURE) --enable-shared=no --enable-static=yes --disable-bsdtar --disable-bsdcat --disable-bsdcpio --disable-posix-regex-lib --disable-xattr --disable-acl --without-zlib --without-bz2lib  --without-libb2 --without-iconv --without-lz4 --without-lzma --without-cng --without-openssl --without-xml2 --without-expat
+	cd libarchive-3.7.7 && mkdir -p build
+	cd libarchive-3.7.7/build && $(CMAKE) -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=OFF -DENABLE_ACL=OFF -DENABLE_BZip2=OFF -DENABLE_CAT=OFF -DENABLE_CNG=OFF -DENABLE_COVERAGE=OFF -DENABLE_CPIO=OFF -DENABLE_EXPAT=OFF -DENABLE_ICONV=OFF -DENABLE_LIBB2=OFF -DENABLE_LIBXML2=OFF -DENABLE_LZ4=OFF -DENABLE_LZMA=OFF -DENABLE_LZO=OFF -DENABLE_MBEDTLS=OFF -DENABLE_NETTLE=OFF -DENABLE_OPENSSL=OFF -DENABLE_TAR=OFF -DENABLE_TEST=OFF -DENABLE_UNZIP=OFF -DENABLE_WERROR=OFF -DENABLE_XATTR=OFF -DENABLE_ZLIB=OFF -DENABLE_ZSTD=ON -DZSTD_INCLUDE_DIR:PATH=$(DEP_PATH)/include -DZSTD_LIBRARY=$(DEP_PATH)/lib/libzstd.a ..
+	$(MAKE) -C libarchive-3.7.7/build
+	$(MAKE) -C libarchive-3.7.7/build install
 
 $(libspeexdsp): | speexdsp
 	cd speexdsp && ./autogen.sh
@@ -264,7 +264,7 @@ $(simde): simde/simde
 
 # Helpers
 
-src: glew-2.1.0 glfw jansson-2.12 libsamplerate-0.1.9 openssl-3.3.2 curl-8.10.0 zstd-1.4.5 libarchive-3.4.3 rtaudio nanovg nanosvg oui-blendish osdialog
+src: glew-2.1.0 glfw jansson-2.12 libsamplerate-0.1.9 openssl-3.3.2 curl-8.10.0 zstd-1.5.6 libarchive-3.7.7 rtaudio nanovg nanosvg oui-blendish osdialog
 
 clean:
 	git clean -fdx

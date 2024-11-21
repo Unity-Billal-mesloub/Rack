@@ -147,6 +147,9 @@ $(libcurl): | $(openssl) curl-8.10.0
 zstd-1.5.6:
 	$(WGET) "https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz"
 	$(SHA256) zstd-1.5.6.tar.gz 8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1
+	# HACK This tar archive creates a symlink "untar" to "tar" before tar exists. This is okay on UNIX but not on Windows where symlinks are copies of files. So create a fake "tar" so the unarchiving works.
+	mkdir -p zstd-1.5.6/tests/cli-tests/bin
+	touch zstd-1.5.6/tests/cli-tests/bin/zstd
 	$(UNTAR) zstd-1.5.6.tar.gz
 	rm zstd-1.5.6.tar.gz
 

@@ -223,6 +223,8 @@ RTAUDIO_FLAGS += -DRTAUDIO_API_ASIO=OFF
 endif
 endif
 
+# RtAudio on Windows and Mac uses these macros to enable UTF-8 device names
+$(rtaudio): export CXXFLAGS += -DUNICODE -D_UNICODE
 $(rtaudio): | rtaudio
 	cd rtaudio && mkdir -p build
 	cd rtaudio/build && $(CMAKE) $(RTAUDIO_FLAGS) ..

@@ -362,8 +362,10 @@ Window::Window() {
 		throw Exception("Could not initialize NanoVG");
 	}
 
-	// Load default Blendish font
+	// Load default UI font
 	uiFont = loadFont(asset::system("res/fonts/DejaVuSans.ttf"));
+	std::shared_ptr<Font> jpFont = loadFont(asset::system("res/fonts/NotoSansJP-Medium.otf"));
+	nvgAddFallbackFontId(vg, uiFont->handle, jpFont->handle);
 	bndSetFont(uiFont->handle);
 
 	if (APP->scene) {

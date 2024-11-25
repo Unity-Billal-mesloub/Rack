@@ -131,8 +131,11 @@ struct Version {
 };
 
 
+/** Returns translation string of the current language setting from `translations/<language>.json`, or English if not found. */
 std::string translate(const std::string& id);
+/** Returns translation string of the given language, or "" if not found. */
 std::string translate(const std::string& id, const std::string& language);
+/** Returns ISO 639-1 language codes of loaded translations, sorted by name of language. */
 std::vector<std::string> getLanguages();
 void init();
 

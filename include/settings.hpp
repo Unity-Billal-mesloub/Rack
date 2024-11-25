@@ -27,6 +27,8 @@ extern bool isPlugin;
 
 // Persistent state, serialized to settings.json.
 
+/** ISO 639-1 language code for string translations. */
+extern std::string language;
 /** Launches Rack without loading plugins or the autosave patch. Always set to false when settings are saved. */
 extern bool safeMode;
 /** vcvrack.com user token */

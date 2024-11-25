@@ -131,5 +131,10 @@ struct Version {
 };
 
 
+std::string translate(const std::string& id);
+std::string translate(const std::string& id, const std::string& language);
+void init();
+
+
 } // namespace string
 } // namespace rack

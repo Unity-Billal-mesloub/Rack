@@ -3,6 +3,7 @@
 #include <ctime>
 #include <cctype> // for tolower and toupper
 #include <algorithm> // for transform and equal
+#include <map>
 #include <libgen.h> // for dirname and basename
 #include <stdarg.h>
 
@@ -11,6 +12,9 @@
 #endif
 
 #include <string.hpp>
+#include <settings.hpp>
+#include <system.hpp>
+#include <asset.hpp>
 
 
 namespace rack {
@@ -321,6 +325,76 @@ bool Version::operator<(const Version& other) {
 	return std::lexicographical_compare(parts.begin(), parts.end(), other.parts.begin(), other.parts.end(), compareVersionPart);
 }
 
+
+/** {language: {id: string}} */
+static std::map<std::string, std::map<std::string, std::string>> translations;
+
+
+static void loadTranslations() {
+	translations.clear();
+	std::string translationsDir = asset::system("translations");
+
+	for (std::string filename : system::getEntries(translationsDir)) {
+		if (system::getExtension(filename) != ".json")
+			continue;
+		std::string language = system::getStem(filename);
+		std::string path = system::join(translationsDir, filename);
+
+		INFO("Loading translation %s from %s", language.c_str(), path.c_str());
+		FILE* file = std::fopen(path.c_str(), "r");
+		if (!file) {
+			WARN("Cannot open translation file %s", path.c_str());
+			continue;
+		}
+		DEFER({std::fclose(file);});
+
+		json_error_t error;
+		json_t* rootJ = json_loadf(file, 0, &error);
+		if (!rootJ) {
+			WARN("Translation file has invalid JSON at %d:%d %s", error.line, error.column, error.text);
+			continue;
+		}
+		DEFER({json_decref(rootJ);});
+
+		auto& translation = translations[language];
+
+		// Load JSON
+		const char* id;
+		json_t* strJ;
+		json_object_foreach(rootJ, id, strJ) {
+			std::string s(json_string_value(strJ), json_string_length(strJ));
+			translation[id] = s;
+		}
+	}
+}
+
+
+std::string translate(const std::string& id) {
+	std::string s = translate(id, settings::language);
+	if (!s.empty())
+		return s;
+
+	// English fallback
+	if (settings::language != "en") {
+		return translate(id, "en");
+	}
+	return "";
+}
+
+
+std::string translate(const std::string& id, const std::string& language) {
+	auto it = translations.find(language);
+	if (it == translations.end())
+		return "";
+
+	const auto& translation = it->second;
+	return get(translation, id, "");
+}
+
+
+void init() {
+	loadTranslations();
+}
 
 
 } // namespace string

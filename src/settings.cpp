@@ -20,6 +20,7 @@ bool devMode = false;
 bool headless = false;
 bool isPlugin = false;
 
+std::string language = "en";
 bool safeMode = false;
 std::string token;
 bool windowMaximized = false;
@@ -125,6 +126,8 @@ void destroy() {
 
 json_t* toJson() {
 	json_t* rootJ = json_object();
+
+	json_object_set_new(rootJ, "language", json_string(language.c_str()));
 
 	// Always disable safe mode when settings are saved.
 	json_object_set_new(rootJ, "safeMode", json_boolean(false));
@@ -281,6 +284,10 @@ json_t* toJson() {
 }
 
 void fromJson(json_t* rootJ) {
+	json_t* languageJ = json_object_get(rootJ, "language");
+	if (languageJ)
+		language = json_string_value(languageJ);
+
 	json_t* safeModeJ = json_object_get(rootJ, "safeMode");
 	if (safeModeJ) {
 		// If safe mode is enabled (e.g. by command line flag), don't disable it when loading.

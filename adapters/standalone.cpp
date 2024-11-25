@@ -179,6 +179,7 @@ int main(int argc, char* argv[]) {
 			exit(1);
 		}
 	}
+	string::init();
 
 	// Check existence of the system res/ directory
 	std::string resDir = asset::system("res");

@@ -366,6 +366,8 @@ Window::Window() {
 	uiFont = loadFont(asset::system("res/fonts/DejaVuSans.ttf"));
 	std::shared_ptr<Font> jpFont = loadFont(asset::system("res/fonts/NotoSansJP-Medium.otf"));
 	nvgAddFallbackFontId(vg, uiFont->handle, jpFont->handle);
+	std::shared_ptr<Font> emojiFont = loadFont(asset::system("res/fonts/NotoEmoji-Medium.ttf"));
+	nvgAddFallbackFontId(vg, uiFont->handle, emojiFont->handle);
 	bndSetFont(uiFont->handle);
 
 	if (APP->scene) {

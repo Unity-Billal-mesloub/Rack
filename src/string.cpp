@@ -383,12 +383,25 @@ std::string translate(const std::string& id) {
 
 
 std::string translate(const std::string& id, const std::string& language) {
-	auto it = translations.find(language);
+	const auto it = translations.find(language);
 	if (it == translations.end())
 		return "";
 
 	const auto& translation = it->second;
 	return get(translation, id, "");
+}
+
+
+std::vector<std::string> getLanguages() {
+	std::vector<std::string> languages;
+	for (const auto& pair : translations) {
+		languages.push_back(pair.first);
+	}
+	// Sort by language name, by UTF-8 bytes
+	std::sort(languages.begin(), languages.end(), [](const std::string& a, const std::string& b) {
+		return translate("language", a) < translate("language", b);
+	});
+	return languages;
 }
 
 

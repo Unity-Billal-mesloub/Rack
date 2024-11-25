@@ -1,3 +1,9 @@
 {
-	"language": "English"
+	"language": "English",
+	"MenuBar.file": "File",
+	"MenuBar.edit": "Edit",
+	"MenuBar.view": "View",
+	"MenuBar.engine": "Engine",
+	"MenuBar.library": "Library",
+	"MenuBar.help": "Help"
 }

@@ -982,6 +982,24 @@ struct HelpButton : MenuButton {
 		menu->cornerFlags = BND_CORNER_TOP;
 		menu->box.pos = getAbsoluteOffset(math::Vec(0, box.size.y));
 
+		// Language
+		std::vector<std::string> languages = string::getLanguages();
+		std::vector<std::string> languageLabels;
+		for (const std::string& language : languages) {
+			languageLabels.push_back(string::translate("language", language));
+		}
+		menu->addChild(createIndexSubmenuItem("🌐 Language", languageLabels, [=]() {
+			auto it = std::find(languages.begin(), languages.end(), settings::language);
+			return it - languages.begin();
+		}, [=](size_t i) {
+			settings::language = get(languages, i, "en");
+			// Request restart
+			std::string msg = string::f("Rack must be restarted to change display language to %s. Restart Rack now?", string::translate("language").c_str());
+			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, msg.c_str())) {
+				APP->window->close();
+			}
+		}));
+
 		menu->addChild(createMenuItem("Tips", "", [=]() {
 			APP->scene->addChild(tipWindowCreate());
 		}));
@@ -1097,27 +1115,27 @@ struct MenuBar : widget::OpaqueWidget {
 		addChild(layout);
 
 		FileButton* fileButton = new FileButton;
-		fileButton->text = "File";
+		fileButton->text = string::translate("MenuBar.file");
 		layout->addChild(fileButton);
 
 		EditButton* editButton = new EditButton;
-		editButton->text = "Edit";
+		editButton->text = string::translate("MenuBar.edit");
 		layout->addChild(editButton);
 
 		ViewButton* viewButton = new ViewButton;
-		viewButton->text = "View";
+		viewButton->text = string::translate("MenuBar.view");
 		layout->addChild(viewButton);
 
 		EngineButton* engineButton = new EngineButton;
-		engineButton->text = "Engine";
+		engineButton->text = string::translate("MenuBar.engine");
 		layout->addChild(engineButton);
 
 		LibraryButton* libraryButton = new LibraryButton;
-		libraryButton->text = "Library";
+		libraryButton->text = string::translate("MenuBar.library");
 		layout->addChild(libraryButton);
 
 		HelpButton* helpButton = new HelpButton;
-		helpButton->text = "Help";
+		helpButton->text = string::translate("MenuBar.help");
 		layout->addChild(helpButton);
 
 		infoLabel = new InfoLabel;

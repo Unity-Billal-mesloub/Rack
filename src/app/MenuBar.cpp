@@ -139,7 +139,7 @@ struct EditButton : MenuButton {
 
 		struct UndoItem : ui::MenuItem {
 			void step() override {
-				text = string::f(string::translate("MenuBar.edit.undo").c_str(), APP->history->getUndoName().c_str());
+				text = string::f(string::translate("MenuBar.edit.undo"), APP->history->getUndoName());
 				disabled = !APP->history->canUndo();
 				MenuItem::step();
 			}
@@ -151,7 +151,7 @@ struct EditButton : MenuButton {
 
 		struct RedoItem : ui::MenuItem {
 			void step() override {
-				text = string::f(string::translate("MenuBar.edit.redo").c_str(), APP->history->getRedoName().c_str());
+				text = string::f(string::translate("MenuBar.edit.redo"), APP->history->getRedoName());
 				disabled = !APP->history->canRedo();
 				MenuItem::step();
 			}
@@ -428,9 +428,9 @@ struct ViewButton : MenuButton {
 			APP->scene->rackScroll->zoomToModules();
 		}));
 
-		menu->addChild(createIndexPtrSubmenuItem(string::translate("MenuBar.view.mousewheelzoom"), {
-			string::f(string::translate("MenuBar.view.mouseWheelZoom.scroll").c_str(), RACK_MOD_CTRL_NAME),
-			string::f(string::translate("MenuBar.view.mouseWheelZoom.zoom").c_str(), RACK_MOD_CTRL_NAME)
+		menu->addChild(createIndexPtrSubmenuItem(string::translate("MenuBar.view.mouseWheelZoom"), {
+			string::f(string::translate("MenuBar.view.mouseWheelZoom.scroll"), RACK_MOD_CTRL_NAME),
+			string::f(string::translate("MenuBar.view.mouseWheelZoom.zoom"), RACK_MOD_CTRL_NAME)
 		}, &settings::mouseWheelZoom));
 
 		menu->addChild(new ui::MenuSeparator);
@@ -788,7 +788,7 @@ struct SyncUpdateItem : ui::MenuItem {
 		ui::Menu* menu = new ui::Menu;
 
 		if (update.minRackVersion != "") {
-			menu->addChild(createMenuLabel(string::f(string::translate("MenuBar.library.requiresRack").c_str(), update.minRackVersion.c_str())));
+			menu->addChild(createMenuLabel(string::f(string::translate("MenuBar.library.requiresRack"), update.minRackVersion)));
 		}
 
 		if (update.changelogUrl != "") {
@@ -997,7 +997,7 @@ struct HelpButton : MenuButton {
 		}, [=](size_t i) {
 			settings::language = get(languages, i, "en");
 			// Request restart
-			std::string msg = string::f(string::translate("MenuBar.help.language.restart").c_str(), string::translate("language").c_str());
+			std::string msg = string::f(string::translate("MenuBar.help.language.restart"), string::translate("language"));
 			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, msg.c_str())) {
 				APP->window->close();
 			}
@@ -1030,12 +1030,12 @@ struct HelpButton : MenuButton {
 		}));
 
 		if (library::isAppUpdateAvailable()) {
-			menu->addChild(createMenuItem(string::f(string::translate("MenuBar.help.update").c_str(), APP_NAME.c_str()), APP_VERSION + " → " + library::appVersion, [=]() {
+			menu->addChild(createMenuItem(string::f(string::translate("MenuBar.help.update"), APP_NAME), APP_VERSION + " → " + library::appVersion, [=]() {
 				system::openBrowser(library::appDownloadUrl);
 			}));
 		}
 		else if (!settings::autoCheckUpdates && !settings::devMode) {
-			menu->addChild(createMenuItem(string::f(string::translate("MenuBar.help.checkUpdate").c_str(), APP_NAME.c_str()), "", [=]() {
+			menu->addChild(createMenuItem(string::f(string::translate("MenuBar.help.checkUpdate"), APP_NAME), "", [=]() {
 				std::thread t([&]() {
 					library::checkAppUpdate();
 				});

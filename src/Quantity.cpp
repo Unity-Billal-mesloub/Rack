@@ -60,14 +60,14 @@ static void teVarsInit() {
 	};
 	for (const Note& note : notes) {
 		// Example: c, cs (or c#), and cb
-		teVariables.push_back({string::f("%s", note.name.c_str()), 440.f * std::pow(2.0, (note.semi - 9) / 12.f)});
-		teVariables.push_back({string::f("%ss", note.name.c_str()), 440.f * std::pow(2.0, (note.semi - 9 + 1) / 12.f)});
-		teVariables.push_back({string::f("%sb", note.name.c_str()), 440.f * std::pow(2.0, (note.semi - 9 - 1) / 12.f)});
+		teVariables.push_back({string::f("%s", note.name), 440.f * std::pow(2.0, (note.semi - 9) / 12.f)});
+		teVariables.push_back({string::f("%ss", note.name), 440.f * std::pow(2.0, (note.semi - 9 + 1) / 12.f)});
+		teVariables.push_back({string::f("%sb", note.name), 440.f * std::pow(2.0, (note.semi - 9 - 1) / 12.f)});
 		for (int oct = 0; oct <= 9; oct++) {
 			// Example: c4, cs4 (or c#4), and cb4
-			teVariables.push_back({string::f("%s%d", note.name.c_str(), oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9) / 12.f)});
-			teVariables.push_back({string::f("%ss%d", note.name.c_str(), oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9 + 1) / 12.f)});
-			teVariables.push_back({string::f("%sb%d", note.name.c_str(), oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9 - 1) / 12.f)});
+			teVariables.push_back({string::f("%s%d", note.name, oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9) / 12.f)});
+			teVariables.push_back({string::f("%ss%d", note.name, oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9 + 1) / 12.f)});
+			teVariables.push_back({string::f("%sb%d", note.name, oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9 - 1) / 12.f)});
 		}
 	}
 

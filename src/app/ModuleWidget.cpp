@@ -673,7 +673,7 @@ void ModuleWidget::save(std::string filename) {
 
 	FILE* file = std::fopen(filename.c_str(), "w");
 	if (!file) {
-		std::string message = string::f("Could not save preset to file %s", filename.c_str());
+		std::string message = string::f("Could not save preset to file %s", filename);
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
 		return;
 	}
@@ -691,7 +691,7 @@ void ModuleWidget::saveTemplate() {
 
 void ModuleWidget::saveTemplateDialog() {
 	if (hasTemplate()) {
-		std::string message = string::f("Overwrite default preset for %s?", model->getFullName().c_str());
+		std::string message = string::f("Overwrite default preset for %s?", model->getFullName());
 		if (!osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, message.c_str()))
 			return;
 	}
@@ -711,7 +711,7 @@ void ModuleWidget::clearTemplate() {
 }
 
 void ModuleWidget::clearTemplateDialog() {
-	std::string message = string::f("Delete default preset for %s?", model->getFullName().c_str());
+	std::string message = string::f("Delete default preset for %s?", model->getFullName());
 	if (!osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, message.c_str()))
 		return;
 	clearTemplate();

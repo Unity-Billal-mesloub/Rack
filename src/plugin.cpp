@@ -234,7 +234,7 @@ static void extractPackages(std::string path) {
 		}
 		catch (Exception& e) {
 			WARN("Plugin package %s failed to extract: %s", packagePath.c_str(), e.what());
-			message += string::f("Could not extract plugin package %s\n", packagePath.c_str());
+			message += string::f("Could not extract plugin package %s\n", packagePath);
 			continue;
 		}
 		// Remove package

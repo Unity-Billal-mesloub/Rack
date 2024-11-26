@@ -1126,7 +1126,7 @@ void RackWidget::saveSelection(std::string path) {
 
 	FILE* file = std::fopen(path.c_str(), "w");
 	if (!file) {
-		std::string message = string::f("Could not save selection to file %s", path.c_str());
+		std::string message = string::f("Could not save selection to file %s", path);
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
 		return;
 	}

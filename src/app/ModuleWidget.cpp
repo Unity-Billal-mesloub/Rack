@@ -543,7 +543,7 @@ bool ModuleWidget::pasteJsonAction(json_t* moduleJ) {
 
 	// history::ModuleChange
 	history::ModuleChange* h = new history::ModuleChange;
-	h->name = "paste module preset";
+	h->name = string::translate("ModuleWidget.history.pastePreset");
 	h->moduleId = module->id;
 	json_incref(oldModuleJ);
 	h->oldModuleJ = oldModuleJ;
@@ -602,7 +602,7 @@ void ModuleWidget::load(std::string filename) {
 void ModuleWidget::loadAction(std::string filename) {
 	// history::ModuleChange
 	history::ModuleChange* h = new history::ModuleChange;
-	h->name = "load module preset";
+	h->name = string::translate("ModuleWidget.history.loadPreset");
 	h->moduleId = module->id;
 	h->oldModuleJ = toJson();
 
@@ -673,7 +673,7 @@ void ModuleWidget::save(std::string filename) {
 
 	FILE* file = std::fopen(filename.c_str(), "w");
 	if (!file) {
-		std::string message = string::f("Could not save preset to file %s", filename);
+		std::string message = string::f(string::translate("ModuleWidget.savePresetFailed"), filename);
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
 		return;
 	}
@@ -691,7 +691,7 @@ void ModuleWidget::saveTemplate() {
 
 void ModuleWidget::saveTemplateDialog() {
 	if (hasTemplate()) {
-		std::string message = string::f("Overwrite default preset for %s?", model->getFullName());
+		std::string message = string::f(string::translate("ModuleWidget.overwriteTemplate"), model->getFullName());
 		if (!osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, message.c_str()))
 			return;
 	}
@@ -711,7 +711,7 @@ void ModuleWidget::clearTemplate() {
 }
 
 void ModuleWidget::clearTemplateDialog() {
-	std::string message = string::f("Delete default preset for %s?", model->getFullName());
+	std::string message = string::f(string::translate("ModuleWidget.clearTemplate"), model->getFullName());
 	if (!osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, message.c_str()))
 		return;
 	clearTemplate();
@@ -761,7 +761,7 @@ void ModuleWidget::resetAction() {
 
 	// history::ModuleChange
 	history::ModuleChange* h = new history::ModuleChange;
-	h->name = "reset module";
+	h->name = string::translate("ModuleWidget.history.resetModule");
 	h->moduleId = module->id;
 	h->oldModuleJ = toJson();
 
@@ -776,7 +776,7 @@ void ModuleWidget::randomizeAction() {
 
 	// history::ModuleChange
 	history::ModuleChange* h = new history::ModuleChange;
-	h->name = "randomize module";
+	h->name = string::translate("ModuleWidget.history.randomizeModule");
 	h->moduleId = module->id;
 	h->oldModuleJ = toJson();
 
@@ -802,7 +802,7 @@ void ModuleWidget::appendDisconnectActions(history::ComplexAction* complexAction
 
 void ModuleWidget::disconnectAction() {
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "disconnect cables";
+	complexAction->name = string::translate("ModuleWidget.history.disconnectCables");
 	appendDisconnectActions(complexAction);
 
 	if (!complexAction->isEmpty())
@@ -814,7 +814,7 @@ void ModuleWidget::disconnectAction() {
 void ModuleWidget::cloneAction(bool cloneCables) {
 	// history::ComplexAction
 	history::ComplexAction* h = new history::ComplexAction;
-	h->name = "duplicate module";
+	h->name = string::translate("ModuleWidget.history.duplicateModule");
 
 	// Save patch store in this module so we can copy it below
 	APP->engine->prepareSaveModule(module);
@@ -914,7 +914,7 @@ void ModuleWidget::bypassAction(bool bypassed) {
 	h->moduleId = module->id;
 	h->bypassed = bypassed;
 	if (!bypassed)
-		h->name = "un-bypass module";
+		h->name = string::translate("ModuleWidget.history.unbypassModule");
 	APP->history->push(h);
 
 	APP->engine->bypassModule(module, bypassed);
@@ -922,7 +922,7 @@ void ModuleWidget::bypassAction(bool bypassed) {
 
 void ModuleWidget::removeAction() {
 	history::ComplexAction* h = new history::ComplexAction;
-	h->name = "delete module";
+	h->name = string::translate("ModuleWidget.history.deleteModule");
 
 	// Disconnect cables
 	appendDisconnectActions(h);
@@ -987,7 +987,7 @@ static void appendPresetItems(ui::Menu* menu, WeakPtr<ModuleWidget> moduleWidget
 		}
 	}
 	if (!hasPresets) {
-		menu->addChild(createMenuLabel("(None)"));
+		menu->addChild(createMenuLabel(string::translate("ModuleWidget.nonePresets")));
 	}
 };
 
@@ -1003,49 +1003,49 @@ void ModuleWidget::createContextMenu() {
 	menu->addChild(createMenuLabel(model->plugin->brand));
 
 	// Info
-	menu->addChild(createSubmenuItem("Info", "", [=](ui::Menu* menu) {
+	menu->addChild(createSubmenuItem(string::translate("ModuleWidget.info"), "", [=](ui::Menu* menu) {
 		model->appendContextMenu(menu);
 
 		if (!weakThis)
 			return;
 		menu->addChild(new ui::MenuSeparator);
-		menu->addChild(createMenuLabel("Module instance ID:"));
+		menu->addChild(createMenuLabel(string::translate("ModuleWidget.moduleId")));
 		menu->addChild(createMenuLabel(string::f("%lld", (long long) weakThis->module->getId())));
 	}));
 
 	// Preset
-	menu->addChild(createSubmenuItem("Preset", "", [=](ui::Menu* menu) {
-		menu->addChild(createMenuItem("Copy", widget::getKeyCommandName(GLFW_KEY_C, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createSubmenuItem(string::translate("ModuleWidget.preset"), "", [=](ui::Menu* menu) {
+		menu->addChild(createMenuItem(string::translate("ModuleWidget.copy"), widget::getKeyCommandName(GLFW_KEY_C, RACK_MOD_CTRL), [=]() {
 			if (!weakThis)
 				return;
 			weakThis->copyClipboard();
 		}));
 
-		menu->addChild(createMenuItem("Paste", widget::getKeyCommandName(GLFW_KEY_V, RACK_MOD_CTRL), [=]() {
+		menu->addChild(createMenuItem(string::translate("ModuleWidget.paste"), widget::getKeyCommandName(GLFW_KEY_V, RACK_MOD_CTRL), [=]() {
 			if (!weakThis)
 				return;
 			weakThis->pasteClipboardAction();
 		}));
 
-		menu->addChild(createMenuItem("Open", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("ModuleWidget.load"), "", [=]() {
 			if (!weakThis)
 				return;
 			weakThis->loadDialog();
 		}));
 
-		menu->addChild(createMenuItem("Save as", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("ModuleWidget.saveAs"), "", [=]() {
 			if (!weakThis)
 				return;
 			weakThis->saveDialog();
 		}));
 
-		menu->addChild(createMenuItem("Save default", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("ModuleWidget.saveTemplate"), "", [=]() {
 			if (!weakThis)
 				return;
 			weakThis->saveTemplateDialog();
 		}));
 
-		menu->addChild(createMenuItem("Clear default", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("ModuleWidget.clearTemplate"), "", [=]() {
 			if (!weakThis)
 				return;
 			weakThis->clearTemplateDialog();
@@ -1053,31 +1053,31 @@ void ModuleWidget::createContextMenu() {
 
 		// Scan `<user dir>/presets/<plugin slug>/<module slug>` for presets.
 		menu->addChild(new ui::MenuSeparator);
-		menu->addChild(createMenuLabel("User presets"));
+		menu->addChild(createMenuLabel(string::translate("ModuleWidget.userPresets")));
 		appendPresetItems(menu, weakThis, weakThis->model->getUserPresetDirectory());
 
 		// Scan `<plugin dir>/presets/<module slug>` for presets.
 		menu->addChild(new ui::MenuSeparator);
-		menu->addChild(createMenuLabel("Factory presets"));
+		menu->addChild(createMenuLabel(string::translate("ModuleWidget.factoryPresets")));
 		appendPresetItems(menu, weakThis, weakThis->model->getFactoryPresetDirectory());
 	}));
 
 	// Initialize
-	menu->addChild(createMenuItem("Initialize", widget::getKeyCommandName(GLFW_KEY_I, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("ModuleWidget.initialize"), widget::getKeyCommandName(GLFW_KEY_I, RACK_MOD_CTRL), [=]() {
 		if (!weakThis)
 			return;
 		weakThis->resetAction();
 	}));
 
 	// Randomize
-	menu->addChild(createMenuItem("Randomize", widget::getKeyCommandName(GLFW_KEY_R, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("ModuleWidget.randomize"), widget::getKeyCommandName(GLFW_KEY_R, RACK_MOD_CTRL), [=]() {
 		if (!weakThis)
 			return;
 		weakThis->randomizeAction();
 	}));
 
 	// Disconnect cables
-	menu->addChild(createMenuItem("Disconnect cables", widget::getKeyCommandName(GLFW_KEY_U, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("ModuleWidget.disconnectCables"), widget::getKeyCommandName(GLFW_KEY_U, RACK_MOD_CTRL), [=]() {
 		if (!weakThis)
 			return;
 		weakThis->disconnectAction();
@@ -1088,35 +1088,35 @@ void ModuleWidget::createContextMenu() {
 	bool bypassed = module && module->isBypassed();
 	if (bypassed)
 		bypassText += " " CHECKMARK_STRING;
-	menu->addChild(createMenuItem("Bypass", bypassText, [=]() {
+	menu->addChild(createMenuItem(string::translate("ModuleWidget.bypass"), bypassText, [=]() {
 		if (!weakThis)
 			return;
 		weakThis->bypassAction(!bypassed);
 	}));
 
 	// Duplicate
-	menu->addChild(createMenuItem("Duplicate", widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("ModuleWidget.duplicate"), widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL), [=]() {
 		if (!weakThis)
 			return;
 		weakThis->cloneAction(false);
 	}));
 
 	// Duplicate with cables
-	menu->addChild(createMenuItem("└ with cables", widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL | GLFW_MOD_SHIFT), [=]() {
+	menu->addChild(createMenuItem("└ " + string::translate("ModuleWidget.duplicateWithCables"), widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL | GLFW_MOD_SHIFT), [=]() {
 		if (!weakThis)
 			return;
 		weakThis->cloneAction(true);
 	}));
 
 	// Delete
-	menu->addChild(createMenuItem("Delete", widget::getKeyCommandName(GLFW_KEY_BACKSPACE, 0) + "/" + widget::getKeyCommandName(GLFW_KEY_DELETE, 0), [=]() {
+	menu->addChild(createMenuItem(string::translate("ModuleWidget.delete"), widget::getKeyCommandName(GLFW_KEY_BACKSPACE, 0) + "/" + widget::getKeyCommandName(GLFW_KEY_DELETE, 0), [=]() {
 		if (!weakThis)
 			return;
 		weakThis->removeAction();
 	}, false, true));
 
 	// Zoom to fit
-	menu->addChild(createMenuItem("Zoom to fit", widget::getKeyCommandName(GLFW_KEY_F4, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("ModuleWidget.zoomFit"), widget::getKeyCommandName(GLFW_KEY_F4, RACK_MOD_CTRL), [=]() {
 		if (!weakThis)
 			return;
 		APP->scene->rackScroll->zoomToBound(weakThis->getBox());

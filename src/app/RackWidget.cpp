@@ -585,7 +585,7 @@ static PasteJsonResult RackWidget_pasteJson(RackWidget* that, json_t* rootJ, his
 
 void RackWidget::pasteJsonAction(json_t* rootJ) {
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "paste modules";
+	complexAction->name = string::translate("RackWidget.history.pasteModules");
 	DEFER({
 		if (!complexAction->isEmpty())
 			APP->history->push(complexAction);
@@ -611,7 +611,7 @@ void RackWidget::pasteModuleJsonAction(json_t* moduleJ) {
 	assert(mw->module);
 
 	history::ComplexAction* h = new history::ComplexAction;
-	h->name = "paste module";
+	h->name = string::translate("RackWidget.history.pasteModule");
 
 	APP->engine->addModule(mw->module);
 
@@ -957,7 +957,7 @@ void RackWidget::updateModuleOldPositions() {
 
 history::ComplexAction* RackWidget::getModuleDragAction() {
 	history::ComplexAction* h = new history::ComplexAction;
-	h->name = "move modules";
+	h->name = string::translate("RackWidget.history.moveModules");
 
 	for (ModuleWidget* mw : getModules()) {
 		// Create ModuleMove action if the module was moved.
@@ -1126,7 +1126,7 @@ void RackWidget::saveSelection(std::string path) {
 
 	FILE* file = std::fopen(path.c_str(), "w");
 	if (!file) {
-		std::string message = string::f("Could not save selection to file %s", path);
+		std::string message = string::f(string::translate("RackWidget.saveSelectionFailed"), path);
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
 		return;
 	}
@@ -1167,7 +1167,7 @@ void RackWidget::copyClipboardSelection() {
 
 void RackWidget::resetSelectionAction() {
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "reset modules";
+	complexAction->name = string::translate("RackWidget.history.resetModules");
 
 	for (ModuleWidget* mw : getSelected()) {
 		assert(mw->module);
@@ -1188,7 +1188,7 @@ void RackWidget::resetSelectionAction() {
 
 void RackWidget::randomizeSelectionAction() {
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "randomize modules";
+	complexAction->name = string::translate("RackWidget.history.randomizeModules");
 
 	for (ModuleWidget* mw : getSelected()) {
 		assert(mw->module);
@@ -1209,7 +1209,7 @@ void RackWidget::randomizeSelectionAction() {
 
 void RackWidget::disconnectSelectionAction() {
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "disconnect cables";
+	complexAction->name = string::translate("RackWidget.history.disconnectCables");
 
 	for (ModuleWidget* mw : getSelected()) {
 		mw->appendDisconnectActions(complexAction);
@@ -1226,7 +1226,7 @@ void RackWidget::cloneSelectionAction(bool cloneCables) {
 	DEFER({json_decref(rootJ);});
 
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "duplicate modules";
+	complexAction->name = string::translate("RackWidget.history.duplicateModules");
 	DEFER({
 		if (!complexAction->isEmpty())
 			APP->history->push(complexAction);
@@ -1272,7 +1272,7 @@ void RackWidget::cloneSelectionAction(bool cloneCables) {
 
 void RackWidget::bypassSelectionAction(bool bypassed) {
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = bypassed ? "bypass modules" : "un-bypass modules";
+	complexAction->name = bypassed ? string::translate("RackWidget.history.bypassModules") : string::translate("RackWidget.history.unbypassModules");
 
 	for (ModuleWidget* mw : getSelected()) {
 		assert(mw->module);
@@ -1304,7 +1304,7 @@ bool RackWidget::isSelectionBypassed() {
 
 void RackWidget::deleteSelectionAction() {
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "delete modules";
+	complexAction->name = string::translate("RackWidget.history.deleteModules");
 
 	// Copy selected set since removing ModuleWidgets modifies it.
 	std::set<ModuleWidget*> selectedModules = getSelected();
@@ -1362,47 +1362,47 @@ void RackWidget::setSelectionPosNearest(math::Vec delta) {
 
 void RackWidget::appendSelectionContextMenu(ui::Menu* menu) {
 	int n = getSelected().size();
-	menu->addChild(createMenuLabel(string::f("%d selected %s", n, n == 1 ? "module" : "modules")));
+	menu->addChild(createMenuLabel(n == 1 ? string::translate("RackWidget.selectedOne") : string::f(string::translate("RackWidget.selectedMany"), n)));
 
 	// Enable alwaysConsume of menu items if the number of selected modules changes
 
 	// Select all
-	menu->addChild(createMenuItem("Select all", widget::getKeyCommandName(GLFW_KEY_A, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.selectAll"), widget::getKeyCommandName(GLFW_KEY_A, RACK_MOD_CTRL), [=]() {
 		selectAll();
 	}, false, true));
 
 	// Deselect
-	menu->addChild(createMenuItem("Deselect", widget::getKeyCommandName(GLFW_KEY_A, RACK_MOD_CTRL | GLFW_MOD_SHIFT), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.deselect"), widget::getKeyCommandName(GLFW_KEY_A, RACK_MOD_CTRL | GLFW_MOD_SHIFT), [=]() {
 		deselectAll();
 	}, n == 0, true));
 
 	// Copy
-	menu->addChild(createMenuItem("Copy", widget::getKeyCommandName(GLFW_KEY_C, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.copy"), widget::getKeyCommandName(GLFW_KEY_C, RACK_MOD_CTRL), [=]() {
 		copyClipboardSelection();
 	}, n == 0));
 
 	// Paste
-	menu->addChild(createMenuItem("Paste", widget::getKeyCommandName(GLFW_KEY_V, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.paste"), widget::getKeyCommandName(GLFW_KEY_V, RACK_MOD_CTRL), [=]() {
 		pasteClipboardAction();
 	}, false, true));
 
 	// Save
-	menu->addChild(createMenuItem("Save selection as", "", [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.saveAs"), "", [=]() {
 		saveSelectionDialog();
 	}, n == 0));
 
 	// Initialize
-	menu->addChild(createMenuItem("Initialize", widget::getKeyCommandName(GLFW_KEY_I, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.initialize"), widget::getKeyCommandName(GLFW_KEY_I, RACK_MOD_CTRL), [=]() {
 		resetSelectionAction();
 	}, n == 0));
 
 	// Randomize
-	menu->addChild(createMenuItem("Randomize", widget::getKeyCommandName(GLFW_KEY_R, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.randomize"), widget::getKeyCommandName(GLFW_KEY_R, RACK_MOD_CTRL), [=]() {
 		randomizeSelectionAction();
 	}, n == 0));
 
 	// Disconnect cables
-	menu->addChild(createMenuItem("Disconnect cables", widget::getKeyCommandName(GLFW_KEY_U, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.disconnectCables"), widget::getKeyCommandName(GLFW_KEY_U, RACK_MOD_CTRL), [=]() {
 		disconnectSelectionAction();
 	}, n == 0));
 
@@ -1411,22 +1411,22 @@ void RackWidget::appendSelectionContextMenu(ui::Menu* menu) {
 	bool bypassed = (n > 0) && isSelectionBypassed();
 	if (bypassed)
 		bypassText += " " CHECKMARK_STRING;
-	menu->addChild(createMenuItem("Bypass", bypassText, [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.bypass"), bypassText, [=]() {
 		bypassSelectionAction(!bypassed);
 	}, n == 0, true));
 
 	// Duplicate
-	menu->addChild(createMenuItem("Duplicate", widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.duplicate"), widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL), [=]() {
 		cloneSelectionAction(false);
 	}, n == 0));
 
 	// Duplicate with cables
-	menu->addChild(createMenuItem("└ with cables", widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL | GLFW_MOD_SHIFT), [=]() {
+	menu->addChild(createMenuItem("└ " + string::translate("RackWidget.duplicateWithCables"), widget::getKeyCommandName(GLFW_KEY_D, RACK_MOD_CTRL | GLFW_MOD_SHIFT), [=]() {
 		cloneSelectionAction(true);
 	}, n == 0));
 
 	// Delete
-	menu->addChild(createMenuItem("Delete", widget::getKeyCommandName(GLFW_KEY_BACKSPACE, 0) + "/" + widget::getKeyCommandName(GLFW_KEY_DELETE, 0), [=]() {
+	menu->addChild(createMenuItem(string::translate("RackWidget.delete"), widget::getKeyCommandName(GLFW_KEY_BACKSPACE, 0) + "/" + widget::getKeyCommandName(GLFW_KEY_DELETE, 0), [=]() {
 		deleteSelectionAction();
 	}, n == 0, true));
 }
@@ -1439,7 +1439,7 @@ void RackWidget::clearCables() {
 void RackWidget::clearCablesAction() {
 	// Add CableRemove for every cable to a ComplexAction
 	history::ComplexAction* complexAction = new history::ComplexAction;
-	complexAction->name = "clear cables";
+	complexAction->name = string::translate("RackWidget.history.clearCables");
 
 	for (CableWidget* cw : getCompleteCables()) {
 		// history::CableRemove

@@ -362,8 +362,9 @@ static void loadTranslations() {
 		const char* id;
 		json_t* strJ;
 		json_object_foreach(rootJ, id, strJ) {
-			std::string s(json_string_value(strJ), json_string_length(strJ));
-			translation[id] = s;
+			if (json_is_string(strJ)) {
+				translation[id] = std::string(json_string_value(strJ), json_string_length(strJ));
+			}
 		}
 	}
 }
@@ -388,7 +389,12 @@ std::string translate(const std::string& id, const std::string& language) {
 		return "";
 
 	const auto& translation = it->second;
-	return get(translation, id, "");
+	const auto it2 = translation.find(id);
+	if (it2 == translation.end()) {
+		WARN("Translation %s not found for %s", id.c_str(), language.c_str());
+		return "";
+	}
+	return it2->second;
 }
 
 

@@ -10,12 +10,23 @@ namespace rack {
 namespace string {
 
 
-/** Converts a `printf()` format string and optional arguments into a std::string.
-Remember that "%s" must reference a `char *`, so use `.c_str()` for `std::string`s, otherwise you will get binary garbage.
+/** Converts a printf format string and optional arguments into a std::string.
+The wrapper template function below automatically converts all arguments (including format string) from `std::string` to `const char*` as needed.
 */
 __attribute__((format(printf, 1, 2)))
 std::string f(const char* format, ...);
 std::string fV(const char* format, va_list args);
+// Converts std::string arguments of f() to `const char*`
+template<typename T>
+T convertFArg(const T& t) {return t;}
+inline const char* convertFArg(const std::string& s) {return s.c_str();}
+template<typename... Args>
+std::string f(Args... args) {
+	// Allows accessing the original f() above
+	typedef std::string (*FType)(const char* format, ...);
+	return FType(f)(convertFArg(args)...);
+}
+
 /** Replaces all characters to lowercase letters */
 std::string lowercase(const std::string& s);
 /** Replaces all characters to uppercase letters */

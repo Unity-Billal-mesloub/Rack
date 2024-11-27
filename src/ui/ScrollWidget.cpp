@@ -178,38 +178,38 @@ void ScrollWidget::onHoverKey(const HoverKeyEvent& e) {
 		return;
 
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
-		if (e.key == GLFW_KEY_PAGE_UP && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_PAGE_UP)) {
 			offset.y -= box.size.y * 0.5;
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_PAGE_UP && (e.mods & RACK_MOD_MASK) == GLFW_MOD_SHIFT) {
+		if (e.isKeyCommand(GLFW_KEY_PAGE_UP, GLFW_MOD_SHIFT)) {
 			offset.x -= box.size.x * 0.5;
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_PAGE_DOWN && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_PAGE_DOWN)) {
 			offset.y += box.size.y * 0.5;
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_PAGE_DOWN && (e.mods & RACK_MOD_MASK) == GLFW_MOD_SHIFT) {
+		if (e.isKeyCommand(GLFW_KEY_PAGE_DOWN, GLFW_MOD_SHIFT)) {
 			offset.x += box.size.x * 0.5;
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_HOME && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_HOME)) {
 			math::Rect containerBox = container->getVisibleChildrenBoundingBox();
 			offset.y = containerBox.getTop();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_HOME && (e.mods & RACK_MOD_MASK) == GLFW_MOD_SHIFT) {
+		if (e.isKeyCommand(GLFW_KEY_HOME, GLFW_MOD_SHIFT)) {
 			math::Rect containerBox = container->getVisibleChildrenBoundingBox();
 			offset.x = containerBox.getLeft();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_END && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_END)) {
 			math::Rect containerBox = container->getVisibleChildrenBoundingBox();
 			offset.y = containerBox.getBottom();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_END && (e.mods & RACK_MOD_MASK) == GLFW_MOD_SHIFT) {
+		if (e.isKeyCommand(GLFW_KEY_END, GLFW_MOD_SHIFT)) {
 			math::Rect containerBox = container->getVisibleChildrenBoundingBox();
 			offset.x = containerBox.getRight();
 			e.consume(this);

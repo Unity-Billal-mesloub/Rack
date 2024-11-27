@@ -33,7 +33,7 @@ struct ParamField : ui::TextField {
 	}
 
 	void onSelectKey(const SelectKeyEvent& e) override {
-		if (e.action == GLFW_PRESS && (e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER)) {
+		if (e.action == GLFW_PRESS && (e.isKeyCommand(GLFW_KEY_ENTER) || e.isKeyCommand(GLFW_KEY_KP_ENTER))) {
 			engine::ParamQuantity* pq = paramWidget->getParamQuantity();
 			assert(pq);
 			float oldValue = pq->getValue();

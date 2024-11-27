@@ -315,52 +315,52 @@ void ModuleWidget::onHover(const HoverEvent& e) {
 
 void ModuleWidget::onHoverKey(const HoverKeyEvent& e) {
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
-		if (e.key == GLFW_KEY_C && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_C, RACK_MOD_CTRL)) {
 			copyClipboard();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_V && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_V, RACK_MOD_CTRL)) {
 			if (pasteClipboardAction()) {
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_D && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_D, RACK_MOD_CTRL)) {
 			cloneAction(false);
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_D && (e.mods & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_D, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			cloneAction(true);
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_I && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_I, RACK_MOD_CTRL)) {
 			resetAction();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_R && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_R, RACK_MOD_CTRL)) {
 			randomizeAction();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_U && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_U, RACK_MOD_CTRL)) {
 			disconnectAction();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_E && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_E, RACK_MOD_CTRL)) {
 			bypassAction(!module->isBypassed());
 			e.consume(this);
 		}
-		if ((e.key == GLFW_KEY_DELETE || e.key == GLFW_KEY_BACKSPACE) && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_DELETE) || e.isKeyCommand(GLFW_KEY_BACKSPACE)) {
 			// Deletes `this`
 			removeAction();
 			e.consume(NULL);
 			return;
 		}
-		if (e.key == GLFW_KEY_F1 && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_F1, RACK_MOD_CTRL)) {
 			std::string manualUrl = model->getManualUrl();
 			if (!manualUrl.empty())
 				system::openBrowser(manualUrl);
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_F4 && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_F4, RACK_MOD_CTRL)) {
 			APP->scene->rackScroll->zoomToBound(getBox());
 			e.consume(this);
 		}

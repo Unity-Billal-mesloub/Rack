@@ -170,40 +170,40 @@ void Scene::onDragHover(const DragHoverEvent& e) {
 void Scene::onHoverKey(const HoverKeyEvent& e) {
 	// Key commands that override children
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
-		// DEBUG("key '%d '%c' scancode %d '%c' keyName '%s'", e.key, e.key, e.scancode, e.scancode, e.keyName.c_str());
-		if (e.key == GLFW_KEY_N && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		// DEBUG("key %d '%c' scancode %d keyName '%s'", e.key, e.key, e.scancode, e.keyName.c_str());
+		if (e.isKeyCommand(GLFW_KEY_N, RACK_MOD_CTRL)) {
 			APP->patch->loadTemplateDialog();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_Q && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_Q, RACK_MOD_CTRL)) {
 			APP->window->close();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_O && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_O, RACK_MOD_CTRL)) {
 			APP->patch->loadDialog();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_O && (e.mods & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_O, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			APP->patch->revertDialog();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_S && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_S, RACK_MOD_CTRL)) {
 			APP->patch->saveDialog();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_S && (e.mods & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_S, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			APP->patch->saveAsDialog();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_Z && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_Z, RACK_MOD_CTRL)) {
 			APP->history->undo();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_Z && (e.mods & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_Z, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			APP->history->redo();
 			e.consume(this);
 		}
-		if ((e.key == GLFW_KEY_MINUS || e.key == GLFW_KEY_KP_SUBTRACT) && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_MINUS, RACK_MOD_CTRL) || e.isKeyCommand(GLFW_KEY_KP_SUBTRACT, RACK_MOD_CTRL)) {
 			float zoom = std::log2(APP->scene->rackScroll->getZoom());
 			zoom *= 2;
 			zoom = std::ceil(zoom - 0.01f) - 1;
@@ -212,7 +212,7 @@ void Scene::onHoverKey(const HoverKeyEvent& e) {
 			e.consume(this);
 		}
 		// Numpad has a "+" key, but the main keyboard section hides it under "="
-		if ((e.key == GLFW_KEY_EQUAL || e.key == GLFW_KEY_KP_ADD) && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_EQUAL, RACK_MOD_CTRL) || e.isKeyCommand(GLFW_KEY_KP_ADD, RACK_MOD_CTRL)) {
 			float zoom = std::log2(APP->scene->rackScroll->getZoom());
 			zoom *= 2;
 			zoom = std::floor(zoom + 0.01f) + 1;
@@ -220,23 +220,23 @@ void Scene::onHoverKey(const HoverKeyEvent& e) {
 			APP->scene->rackScroll->setZoom(std::pow(2.f, zoom));
 			e.consume(this);
 		}
-		if ((e.key == GLFW_KEY_0 || e.key == GLFW_KEY_KP_0) && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_0, RACK_MOD_CTRL) || e.isKeyCommand(GLFW_KEY_KP_0, RACK_MOD_CTRL)) {
 			APP->scene->rackScroll->setZoom(1.f);
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_F1 && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_F1)) {
 			system::openBrowser("https://vcvrack.com/manual/");
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_F3 && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_F3)) {
 			settings::cpuMeter ^= true;
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_F4 && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_F4)) {
 			APP->scene->rackScroll->zoomToModules();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_F11 && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_F11)) {
 			APP->window->setFullScreen(!APP->window->isFullScreen());
 			// The MenuBar will be hidden when the mouse moves over the RackScrollWidget.
 			// menuBar->hide();
@@ -244,57 +244,57 @@ void Scene::onHoverKey(const HoverKeyEvent& e) {
 		}
 
 		// Module selections
-		if (e.key == GLFW_KEY_A && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_A, RACK_MOD_CTRL)) {
 			rack->selectAll();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_A && (e.mods & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_A, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			rack->deselectAll();
 			e.consume(this);
 		}
-		if (e.key == GLFW_KEY_C && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_C, RACK_MOD_CTRL)) {
 			if (rack->hasSelection()) {
 				rack->copyClipboardSelection();
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_I && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_I, RACK_MOD_CTRL)) {
 			if (rack->hasSelection()) {
 				rack->resetSelectionAction();
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_R && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_R, RACK_MOD_CTRL)) {
 			if (rack->hasSelection()) {
 				rack->randomizeSelectionAction();
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_U && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_U, RACK_MOD_CTRL)) {
 			if (rack->hasSelection()) {
 				rack->disconnectSelectionAction();
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_E && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_E, RACK_MOD_CTRL)) {
 			if (rack->hasSelection()) {
 				rack->bypassSelectionAction(!rack->isSelectionBypassed());
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_D && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_D, RACK_MOD_CTRL)) {
 			if (rack->hasSelection()) {
 				rack->cloneSelectionAction(false);
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_D && (e.mods & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_D, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			if (rack->hasSelection()) {
 				rack->cloneSelectionAction(true);
 				e.consume(this);
 			}
 		}
-		if ((e.key == GLFW_KEY_DELETE || e.key == GLFW_KEY_BACKSPACE) && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_DELETE) || e.isKeyCommand(GLFW_KEY_BACKSPACE)) {
 			if (rack->hasSelection()) {
 				rack->deleteSelectionAction();
 				e.consume(this);
@@ -331,17 +331,17 @@ void Scene::onHoverKey(const HoverKeyEvent& e) {
 	// Key commands that can be overridden by children
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
 		// Alternative key command for exiting fullscreen, since F11 doesn't work reliably on Mac due to "Show desktop" OS binding.
-		if (e.key == GLFW_KEY_ESCAPE && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_ESCAPE, 0)) {
 			if (APP->window->isFullScreen()) {
 				APP->window->setFullScreen(false);
 				e.consume(this);
 			}
 		}
-		if (e.key == GLFW_KEY_V && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_V, RACK_MOD_CTRL)) {
 			rack->pasteClipboardAction();
 			e.consume(this);
 		}
-		if ((e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER) && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_ENTER) || e.isKeyCommand(GLFW_KEY_KP_ENTER)) {
 			browser->show();
 			e.consume(this);
 		}

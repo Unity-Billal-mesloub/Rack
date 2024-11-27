@@ -50,7 +50,7 @@ void MenuOverlay::onHoverKey(const HoverKeyEvent& e) {
 	if (e.isConsumed())
 		return;
 
-	if (e.action == GLFW_PRESS && e.key == GLFW_KEY_ESCAPE) {
+	if (e.action == GLFW_PRESS && e.isKeyCommand(GLFW_KEY_ESCAPE)) {
 		ActionEvent eAction;
 		onAction(eAction);
 	}

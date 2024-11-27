@@ -285,7 +285,7 @@ struct ModelBox : widget::OpaqueWidget {
 
 	void onHoverKey(const HoverKeyEvent& e) override {
 		if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
-			if (e.key == GLFW_KEY_F1 && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+			if (e.isKeyCommand(GLFW_KEY_F1, RACK_MOD_CTRL)) {
 				system::openBrowser(model->getManualUrl());
 				e.consume(this);
 			}
@@ -799,7 +799,7 @@ struct Browser : widget::OpaqueWidget {
 	void onHoverKey(const HoverKeyEvent& e) override {
 		if (e.action == GLFW_PRESS) {
 			// Secret key command to dump all visible modules into rack
-			if (e.key == GLFW_KEY_F2 && (e.mods & RACK_MOD_MASK) == (RACK_MOD_CTRL | GLFW_MOD_SHIFT | GLFW_MOD_ALT)) {
+			if (e.isKeyCommand(GLFW_KEY_F2, RACK_MOD_CTRL | GLFW_MOD_SHIFT | GLFW_MOD_ALT)) {
 				int count = 0;
 				for (widget::Widget* w : modelContainer->children) {
 					ModelBox* mb = dynamic_cast<ModelBox*>(w);
@@ -841,7 +841,7 @@ inline void ClearButton::onAction(const ActionEvent& e) {
 inline void BrowserSearchField::onSelectKey(const SelectKeyEvent& e) {
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
 		// Backspace when the field is empty to clear filters.
-		if (e.key == GLFW_KEY_BACKSPACE) {
+		if (e.isKeyCommand(GLFW_KEY_BACKSPACE) || e.isKeyCommand(GLFW_KEY_BACKSPACE, RACK_MOD_CTRL)) {
 			if (text == "") {
 				browser->clear();
 				e.consume(this);

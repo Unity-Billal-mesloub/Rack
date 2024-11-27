@@ -120,7 +120,7 @@ void TextField::onSelectText(const SelectTextEvent& e) {
 void TextField::onSelectKey(const SelectKeyEvent& e) {
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
 		// Backspace
-		if (e.key == GLFW_KEY_BACKSPACE && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_BACKSPACE)) {
 			if (cursor == selection) {
 				cursor = std::max(cursor - 1, 0);
 			}
@@ -128,7 +128,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Ctrl+Backspace
-		if (e.key == GLFW_KEY_BACKSPACE && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_BACKSPACE, RACK_MOD_CTRL)) {
 			if (cursor == selection) {
 				cursorToPrevWord();
 			}
@@ -136,7 +136,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Delete
-		if (e.key == GLFW_KEY_DELETE && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_DELETE)) {
 			if (cursor == selection) {
 				cursor = std::min(cursor + 1, (int) text.size());
 			}
@@ -144,7 +144,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Ctrl+Delete
-		if (e.key == GLFW_KEY_DELETE && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_DELETE, RACK_MOD_CTRL)) {
 			if (cursor == selection) {
 				cursorToNextWord();
 			}
@@ -152,81 +152,93 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Left
-		if (e.key == GLFW_KEY_LEFT) {
-			if ((e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
-				cursorToPrevWord();
-			}
-			else {
-				cursor = std::max(cursor - 1, 0);
-			}
-			if (!(e.mods & GLFW_MOD_SHIFT)) {
-				selection = cursor;
-			}
+		if (e.isKeyCommand(GLFW_KEY_LEFT)) {
+			cursor = std::max(cursor - 1, 0);
+			selection = cursor;
+			e.consume(this);
+		}
+		if (e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL)) {
+			cursorToPrevWord();
+			selection = cursor;
+			e.consume(this);
+		}
+		if (e.isKeyCommand(GLFW_KEY_LEFT, GLFW_MOD_SHIFT)) {
+			cursor = std::max(cursor - 1, 0);
+			e.consume(this);
+		}
+		if (e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+			cursorToPrevWord();
 			e.consume(this);
 		}
 		// Right
-		if (e.key == GLFW_KEY_RIGHT) {
-			if ((e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
-				cursorToNextWord();
-			}
-			else {
-				cursor = std::min(cursor + 1, (int) text.size());
-			}
-			if (!(e.mods & GLFW_MOD_SHIFT)) {
-				selection = cursor;
-			}
+		if (e.isKeyCommand(GLFW_KEY_RIGHT)) {
+			cursor = std::min(cursor + 1, (int) text.size());
+			selection = cursor;
+			e.consume(this);
+		}
+		if (e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL)) {
+			cursorToNextWord();
+			selection = cursor;
+			e.consume(this);
+		}
+		if (e.isKeyCommand(GLFW_KEY_RIGHT, GLFW_MOD_SHIFT)) {
+			cursor = std::min(cursor + 1, (int) text.size());
+			e.consume(this);
+		}
+		if (e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+			cursorToNextWord();
 			e.consume(this);
 		}
 		// Up (placeholder)
-		if (e.key == GLFW_KEY_UP) {
+		if (e.isKeyCommand(GLFW_KEY_UP)) {
 			e.consume(this);
 		}
 		// Down (placeholder)
-		if (e.key == GLFW_KEY_DOWN) {
+		if (e.isKeyCommand(GLFW_KEY_DOWN)) {
 			e.consume(this);
 		}
 		// Home
-		if (e.key == GLFW_KEY_HOME && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_HOME)) {
 			selection = cursor = 0;
 			e.consume(this);
 		}
 		// Shift+Home
-		if (e.key == GLFW_KEY_HOME && (e.mods & RACK_MOD_MASK) == GLFW_MOD_SHIFT) {
+		if (e.isKeyCommand(GLFW_KEY_HOME, GLFW_MOD_SHIFT)) {
 			cursor = 0;
 			e.consume(this);
 		}
 		// End
-		if (e.key == GLFW_KEY_END && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_END)) {
 			selection = cursor = text.size();
 			e.consume(this);
 		}
 		// Shift+End
-		if (e.key == GLFW_KEY_END && (e.mods & RACK_MOD_MASK) == GLFW_MOD_SHIFT) {
+		if (e.isKeyCommand(GLFW_KEY_END, GLFW_MOD_SHIFT)) {
 			cursor = text.size();
 			e.consume(this);
 		}
 		// Ctrl+V
-		if (e.key == GLFW_KEY_V && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_V, RACK_MOD_CTRL)) {
 			pasteClipboard();
 			e.consume(this);
 		}
 		// Ctrl+X
-		if (e.key == GLFW_KEY_X && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_X, RACK_MOD_CTRL)) {
 			cutClipboard();
 			e.consume(this);
 		}
 		// Ctrl+C
-		if (e.key == GLFW_KEY_C && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_C, RACK_MOD_CTRL)) {
 			copyClipboard();
 			e.consume(this);
 		}
 		// Ctrl+A
-		if (e.key == GLFW_KEY_A && (e.mods & RACK_MOD_MASK) == RACK_MOD_CTRL) {
+		if (e.isKeyCommand(GLFW_KEY_A, RACK_MOD_CTRL)) {
 			selectAll();
 			e.consume(this);
 		}
 		// Enter
-		if ((e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER) && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_ENTER) || e.isKeyCommand(GLFW_KEY_KP_ENTER)) {
 			if (multiline) {
 				insertText("\n");
 			}
@@ -237,19 +249,19 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Tab
-		if (e.key == GLFW_KEY_TAB && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.isKeyCommand(GLFW_KEY_TAB)) {
 			if (nextField)
 				APP->event->setSelectedWidget(nextField);
 			e.consume(this);
 		}
 		// Shift+Tab
-		if (e.key == GLFW_KEY_TAB && (e.mods & RACK_MOD_MASK) == GLFW_MOD_SHIFT) {
+		if (e.isKeyCommand(GLFW_KEY_TAB, GLFW_MOD_SHIFT)) {
 			if (prevField)
 				APP->event->setSelectedWidget(prevField);
 			e.consume(this);
 		}
 		// Consume all printable keys unless Ctrl is held
-		if ((GLFW_KEY_SPACE <= e.key && e.key <= GLFW_KEY_GRAVE_ACCENT) && (e.mods & RACK_MOD_CTRL) == 0) {
+		if (GLFW_KEY_SPACE <= e.key && e.key < 128 && (e.mods & RACK_MOD_CTRL) == 0) {
 			e.consume(this);
 		}
 

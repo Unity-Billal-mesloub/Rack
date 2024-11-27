@@ -133,7 +133,7 @@ struct CcChoice : LedDisplayChoice {
 	}
 
 	void onSelectKey(const SelectKeyEvent& e) override {
-		if ((e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER) && e.action == GLFW_PRESS && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.action == GLFW_PRESS && (e.isKeyCommand(GLFW_KEY_ENTER) || e.isKeyCommand(GLFW_KEY_KP_ENTER))) {
 			DeselectEvent eDeselect;
 			onDeselect(eDeselect);
 			APP->event->selectedWidget = NULL;
@@ -235,7 +235,7 @@ struct NoteChoice : LedDisplayChoice {
 	}
 
 	void onSelectKey(const SelectKeyEvent& e) override {
-		if ((e.key == GLFW_KEY_ENTER || e.key == GLFW_KEY_KP_ENTER) && e.action == GLFW_PRESS && (e.mods & RACK_MOD_MASK) == 0) {
+		if (e.action == GLFW_PRESS && (e.isKeyCommand(GLFW_KEY_ENTER) || e.isKeyCommand(GLFW_KEY_KP_ENTER))) {
 			DeselectEvent eDeselect;
 			onDeselect(eDeselect);
 			APP->event->selectedWidget = NULL;

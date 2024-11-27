@@ -61,14 +61,14 @@ struct PortTooltip : ui::Tooltip {
 					continue;
 				text += "\n";
 				if (portWidget->type == engine::Port::INPUT)
-					text += "From ";
+					text += string::translate("PortWidget.from");
 				else
-					text += "To ";
+					text += string::translate("PortWidget.to");
 				text += otherPw->module->model->getFullName();
 				text += ": ";
 				text += otherPw->getPortInfo()->getName();
 				text += " ";
-				text += (otherPw->type == engine::Port::INPUT) ? "input" : "output";
+				text += (otherPw->type == engine::Port::INPUT) ? string::translate("PortWidget.input") : string::translate("PortWidget.output");
 			}
 		}
 		Tooltip::step();
@@ -140,11 +140,11 @@ struct PortCableItem : ui::ColorDotMenuItem {
 	ui::Menu* createChildMenu() override {
 		ui::Menu* menu = new ui::Menu;
 
-		// menu->addChild(createMenuLabel(string::f("ID: %ld", cw->cable->id)));
+		// menu->addChild(createMenuLabel(string::f(string::translate("PortWidget.cableId"), cw->cable->id)));
 
 		for (NVGcolor color : settings::cableColors) {
 			// Include extra leading spaces for the color circle
-			CableColorItem* item = createMenuItem<CableColorItem>("Set color");
+			CableColorItem* item = createMenuItem<CableColorItem>(string::translate("PortWidget.setColor"));
 			item->disabled = color::isEqual(color, cw->color);
 			item->cw = cw;
 			item->color = color;
@@ -286,7 +286,7 @@ void PortWidget::createContextMenu() {
 	std::vector<CableWidget*> cws = APP->scene->rack->getCompleteCablesOnPort(this);
 	CableWidget* topCw = cws.empty() ? NULL : cws.back();
 
-	menu->addChild(createMenuItem("Delete top cable", RACK_MOD_SHIFT_NAME "+click",
+	menu->addChild(createMenuItem(string::translate("PortWidget.deleteTopCable"), widget::getKeyCommandName(0, RACK_MOD_SHIFT) + string::translate("PortWidget.click"),
 		[=]() {
 			if (!weakThis)
 				return;
@@ -296,7 +296,7 @@ void PortWidget::createContextMenu() {
 	));
 
 	{
-		PortCloneCableItem* item = createMenuItem<PortCloneCableItem>("Duplicate top cable", RACK_MOD_CTRL_NAME "+Shift+drag");
+		PortCloneCableItem* item = createMenuItem<PortCloneCableItem>(string::translate("PortWidget.cloneTopCable"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("PortWidget.drag"));
 		item->disabled = !topCw;
 		item->pw = this;
 		item->cw = topCw;
@@ -304,7 +304,7 @@ void PortWidget::createContextMenu() {
 	}
 
 	{
-		PortCreateCableItem* item = createMenuItem<PortCreateCableItem>("Create cable on top", RACK_MOD_CTRL_NAME "+drag");
+		PortCreateCableItem* item = createMenuItem<PortCreateCableItem>(string::translate("PortWidget.createCableTop"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("PortWidget.drag"));
 		item->pw = this;
 		menu->addChild(item);
 	}
@@ -317,7 +317,7 @@ void PortWidget::createContextMenu() {
 		std::string label = get(settings::cableLabels, colorId);
 		if (label == "")
 			label = string::f("#%lld", (long long) (colorId + 1));
-		PortCreateCableColorItem* item = createMenuItem<PortCreateCableColorItem>("Create cable: " + label);
+		PortCreateCableColorItem* item = createMenuItem<PortCreateCableColorItem>(string::translate("PortWidget.createCable") + label);
 		item->pw = this;
 		item->color = color;
 		item->colorId = colorId;
@@ -326,7 +326,7 @@ void PortWidget::createContextMenu() {
 
 	if (!cws.empty()) {
 		menu->addChild(new ui::MenuSeparator);
-		menu->addChild(createMenuLabel("Click+drag to grab cable"));
+		menu->addChild(createMenuLabel(string::translate("PortWidget.clickDrag") + string::translate("PortWidget.grabCable")));
 
 		// Cable items
 		for (auto it = cws.rbegin(); it != cws.rend(); it++) {
@@ -342,7 +342,7 @@ void PortWidget::createContextMenu() {
 		}
 
 		if (cws.size() > 1) {
-			PortAllCablesItem* item = createMenuItem<PortAllCablesItem>("All cables");
+			PortAllCablesItem* item = createMenuItem<PortAllCablesItem>(string::translate("PortWidget.allCables"));
 			item->pw = this;
 			item->cws = cws;
 			menu->addChild(item);
@@ -431,7 +431,7 @@ void PortWidget::onDragStart(const DragStartEvent& e) {
 		internal->history = NULL;
 	}
 	internal->history = new history::ComplexAction;
-	internal->history->name = "move cable";
+	internal->history->name = string::translate("PortWidget.history.moveCable");
 
 	std::vector<CableWidget*> cws;
 	int mods = APP->window->getMods();

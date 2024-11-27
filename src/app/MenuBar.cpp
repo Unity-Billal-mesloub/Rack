@@ -1094,7 +1094,7 @@ struct InfoLabel : ui::Label {
 			double fps = std::isfinite(frameDurationAvg) ? 1.0 / frameDurationAvg : 0.0;
 			double meterAverage = APP->engine->getMeterAverage();
 			double meterMax = APP->engine->getMeterMax();
-			text += string::f("%.1f fps  %.1f%% avg  %.1f%% max", fps, meterAverage * 100, meterMax * 100);
+			text += string::f(string::translate("MenuBar.infoLabel"), fps, meterAverage * 100, meterMax * 100);
 			text += "     ";
 		}
 

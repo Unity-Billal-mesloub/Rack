@@ -106,16 +106,16 @@ std::string Model::getManualUrl() {
 
 void Model::appendContextMenu(ui::Menu* menu, bool inBrowser) {
 	// plugin
-	menu->addChild(createMenuItem("Plugin: " + plugin->name, "", [=]() {
+	menu->addChild(createMenuItem(string::translate("Model.plugin") + plugin->name, "", [=]() {
 		system::openBrowser(plugin->pluginUrl);
 	}, plugin->pluginUrl == ""));
 
 	// version
-	menu->addChild(createMenuLabel("Version: " + plugin->version));
+	menu->addChild(createMenuLabel(string::translate("Model.version") + plugin->version));
 
 	// author
 	if (plugin->author != "") {
-		menu->addChild(createMenuItem("Author: " + plugin->author, "", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.author") + plugin->author, "", [=]() {
 			system::openBrowser(plugin->authorUrl);
 		}, plugin->authorUrl.empty()));
 	}
@@ -123,17 +123,17 @@ void Model::appendContextMenu(ui::Menu* menu, bool inBrowser) {
 	// license
 	std::string license = plugin->license;
 	if (string::startsWith(license, "https://") || string::startsWith(license, "http://")) {
-		menu->addChild(createMenuItem("License: Open in browser", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.licenseBrowser"), "", [=]() {
 			system::openBrowser(license);
 		}));
 	}
 	else if (license != "") {
-		menu->addChild(createMenuLabel("License: " + license));
+		menu->addChild(createMenuLabel(string::translate("Model.license") + license));
 	}
 
 	// tags
 	if (!tagIds.empty()) {
-		menu->addChild(createMenuLabel("Tags:"));
+		menu->addChild(createMenuLabel(string::translate("Model.tags")));
 		for (int tagId : tagIds) {
 			menu->addChild(createMenuLabel("• " + tag::getTag(tagId)));
 		}
@@ -142,13 +142,13 @@ void Model::appendContextMenu(ui::Menu* menu, bool inBrowser) {
 	menu->addChild(new ui::MenuSeparator);
 
 	// VCV Library page
-	menu->addChild(createMenuItem("VCV Library page", "", [=]() {
+	menu->addChild(createMenuItem(string::translate("Model.library"), "", [=]() {
 		system::openBrowser("https://library.vcvrack.com/" + plugin->slug + "/" + slug);
 	}));
 
 	// modularGridUrl
 	if (modularGridUrl != "") {
-		menu->addChild(createMenuItem("ModularGrid page", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.modularGrid"), "", [=]() {
 			system::openBrowser(modularGridUrl);
 		}));
 	}
@@ -156,42 +156,42 @@ void Model::appendContextMenu(ui::Menu* menu, bool inBrowser) {
 	// manual
 	std::string manualUrl = getManualUrl();
 	if (manualUrl != "") {
-		menu->addChild(createMenuItem("User manual", widget::getKeyCommandName(GLFW_KEY_F1, RACK_MOD_CTRL), [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.manual"), widget::getKeyCommandName(GLFW_KEY_F1, RACK_MOD_CTRL), [=]() {
 			system::openBrowser(manualUrl);
 		}));
 	}
 
 	// donate
 	if (plugin->donateUrl != "") {
-		menu->addChild(createMenuItem("Donate", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.donate"), "", [=]() {
 			system::openBrowser(plugin->donateUrl);
 		}));
 	}
 
 	// source code
 	if (plugin->sourceUrl != "") {
-		menu->addChild(createMenuItem("Source code", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.source"), "", [=]() {
 			system::openBrowser(plugin->sourceUrl);
 		}));
 	}
 
 	// changelog
 	if (plugin->changelogUrl != "") {
-		menu->addChild(createMenuItem("Changelog", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.changelog"), "", [=]() {
 			system::openBrowser(plugin->changelogUrl);
 		}));
 	}
 
 	// author email
 	if (plugin->authorEmail != "") {
-		menu->addChild(createMenuItem("Author email", "Copy to clipboard", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.authorEmail"), string::translate("Model.authorEmailCopy"), [=]() {
 			glfwSetClipboardString(APP->window->win, plugin->authorEmail.c_str());
 		}));
 	}
 
 	// plugin folder
 	if (plugin->path != "") {
-		menu->addChild(createMenuItem("Open plugin folder", "", [=]() {
+		menu->addChild(createMenuItem(string::translate("Model.pluginDir"), "", [=]() {
 			system::openDirectory(plugin->path);
 		}));
 	}
@@ -200,7 +200,7 @@ void Model::appendContextMenu(ui::Menu* menu, bool inBrowser) {
 	std::string favoriteRightText = inBrowser ? (RACK_MOD_CTRL_NAME "+click") : "";
 	if (isFavorite())
 		favoriteRightText += " " CHECKMARK_STRING;
-	menu->addChild(createMenuItem("Favorite", favoriteRightText,
+	menu->addChild(createMenuItem(string::translate("Model.favorite"), favoriteRightText,
 		[=]() {
 			setFavorite(!isFavorite());
 		}

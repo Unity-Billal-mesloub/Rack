@@ -76,7 +76,7 @@ struct ParamValueItem : ui::MenuItem {
 			if (oldValue != newValue) {
 				// Push ParamChange history action
 				history::ParamChange* h = new history::ParamChange;
-				h->name = "set parameter";
+				h->name = string::translate("ParamWidget.history.setParam");
 				h->moduleId = paramWidget->module->id;
 				h->paramId = paramWidget->paramId;
 				h->oldValue = oldValue;
@@ -274,20 +274,20 @@ void ParamWidget::createContextMenu() {
 
 	// Initialize
 	if (pq && pq->resetEnabled && pq->isBounded()) {
-		menu->addChild(createMenuItem("Initialize", switchQuantity ? "" : "Double-click", [=]() {
+		menu->addChild(createMenuItem(string::translate("ParamWidget.initialize"), switchQuantity ? "" : string::translate("ParamWidget.doubleClick"), [=]() {
 			this->resetAction();
 		}));
 	}
 
 	// Fine
 	if (!switchQuantity) {
-		menu->addChild(createMenuItem("Fine adjust", RACK_MOD_CTRL_NAME "+drag", NULL, true));
+		menu->addChild(createMenuItem(string::translate("ParamWidget.fine"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("ParamWidget.fineDrag"), NULL, true));
 	}
 
 	// Unmap
 	engine::ParamHandle* paramHandle = module ? APP->engine->getParamHandle(module->id, paramId) : NULL;
 	if (paramHandle) {
-		menu->addChild(createMenuItem("Unmap", paramHandle->text, [=]() {
+		menu->addChild(createMenuItem(string::translate("ParamWidget.unmap"), paramHandle->text, [=]() {
 			APP->engine->updateParamHandle(paramHandle, -1, 0);
 		}));
 	}
@@ -306,7 +306,7 @@ void ParamWidget::resetAction() {
 		if (oldValue != newValue) {
 			// Push ParamChange history action
 			history::ParamChange* h = new history::ParamChange;
-			h->name = "reset parameter";
+			h->name = string::translate("ParamWidget.history.reset");
 			h->moduleId = module->id;
 			h->paramId = paramId;
 			h->oldValue = oldValue;

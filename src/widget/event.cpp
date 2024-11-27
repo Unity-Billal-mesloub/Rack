@@ -3,6 +3,7 @@
 #include <context.hpp>
 #include <window/Window.hpp>
 #include <system.hpp>
+#include <string.hpp>
 
 
 namespace rack {
@@ -10,9 +11,12 @@ namespace widget {
 
 
 std::string getKeyName(int key) {
+	if (key < 32)
+		return "";
+
 	// glfwGetKeyName overrides
 	switch (key) {
-		case GLFW_KEY_SPACE: return "Space";
+		case GLFW_KEY_SPACE: return string::translate("key.space");
 	}
 
 	// Printable characters
@@ -22,21 +26,21 @@ std::string getKeyName(int key) {
 
 	// Unprintable keys with names
 	switch (key) {
-		case GLFW_KEY_ESCAPE: return "Escape";
-		case GLFW_KEY_ENTER: return "Enter";
-		case GLFW_KEY_TAB: return "Tab";
-		case GLFW_KEY_BACKSPACE: return "Backspace";
-		case GLFW_KEY_INSERT: return "Insert";
-		case GLFW_KEY_DELETE: return "Delete";
-		case GLFW_KEY_RIGHT: return "Right";
-		case GLFW_KEY_LEFT: return "Left";
-		case GLFW_KEY_DOWN: return "Down";
-		case GLFW_KEY_UP: return "Up";
-		case GLFW_KEY_PAGE_UP: return "Page Up";
-		case GLFW_KEY_PAGE_DOWN: return "Page Down";
-		case GLFW_KEY_HOME: return "Home";
-		case GLFW_KEY_END: return "End";
-		case GLFW_KEY_KP_ENTER: return "Enter";
+		case GLFW_KEY_ESCAPE: return string::translate("key.escape");
+		case GLFW_KEY_ENTER: return string::translate("key.enter");
+		case GLFW_KEY_TAB: return string::translate("key.tab");
+		case GLFW_KEY_BACKSPACE: return string::translate("key.backspace");
+		case GLFW_KEY_INSERT: return string::translate("key.insert");
+		case GLFW_KEY_DELETE: return string::translate("key.delete");
+		case GLFW_KEY_RIGHT: return string::translate("key.right");
+		case GLFW_KEY_LEFT: return string::translate("key.left");
+		case GLFW_KEY_DOWN: return string::translate("key.down");
+		case GLFW_KEY_UP: return string::translate("key.up");
+		case GLFW_KEY_PAGE_UP: return string::translate("key.pageUp");
+		case GLFW_KEY_PAGE_DOWN: return string::translate("key.pageDown");
+		case GLFW_KEY_HOME: return string::translate("key.home");
+		case GLFW_KEY_END: return string::translate("key.end");
+		case GLFW_KEY_KP_ENTER: return string::translate("key.enter");
 	}
 
 	if (GLFW_KEY_F1 <= key && key <= GLFW_KEY_F25)
@@ -49,13 +53,20 @@ std::string getKeyName(int key) {
 std::string getKeyCommandName(int key, int mods) {
 	std::string modsName;
 	if (mods & RACK_MOD_CTRL) {
-		modsName += RACK_MOD_CTRL_NAME "+";
+#if defined ARCH_MAC
+		modsName += "⌘";
+#else
+		modsName += string::translate("key.ctrl");
+#endif
+		modsName += "+";
 	}
 	if (mods & GLFW_MOD_SHIFT) {
-		modsName += RACK_MOD_SHIFT_NAME "+";
+		modsName += string::translate("key.shift");
+		modsName += "+";
 	}
 	if (mods & GLFW_MOD_ALT) {
-		modsName += RACK_MOD_ALT_NAME "+";
+		modsName += string::translate("key.alt");
+		modsName += "+";
 	}
 	return modsName + getKeyName(key);
 }

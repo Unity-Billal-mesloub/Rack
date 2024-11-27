@@ -43,7 +43,18 @@ namespace widget {
 struct Widget;
 
 
+/** Returns the name of a GLFW key macro.
+Printable keys return the key string such as "Q", "=", "\t", etc.
+Letters are capitalized.
+Does not remap keys based on keyboard layout, so GLFW_KEY_Q always returns "Q".
+GLFW_KEY_SPACE returns "Space" translated to the current language.
+Non-printable characters return the name of the key in the current language.
+Key 0 returns "".
+*/
 std::string getKeyName(int key);
+/** Returns the name of a key command/chord/combo.
+For example, getKeyCommandName(GLFW_KEY_Q, GLFW_MOD_CONTROL) == "Ctrl+Q" translated to the current language.
+*/
 std::string getKeyCommandName(int key, int mods = 0);
 
 

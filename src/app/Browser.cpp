@@ -82,7 +82,7 @@ static ModuleWidget* chooseModel(plugin::Model* model) {
 	mi.lastAdded = system::getUnixTime();
 
 	history::ComplexAction* h = new history::ComplexAction;
-	h->name = "add module";
+	h->name = string::translate("Browser.history.addModule");
 
 	// Create Module and ModuleWidget
 	INFO("Creating module %s", model->getFullName().c_str());
@@ -306,7 +306,8 @@ struct ModelBox : widget::OpaqueWidget {
 			text += "\n" + model->description;
 		}
 		// Tags
-		text += "\n\nTags: ";
+		text += "\n\n";
+		text += string::translate("Browser.tooltipTags");
 		std::vector<std::string> tags;
 		for (int tagId : model->tagIds) {
 			tags.push_back(tag::getTag(tagId));
@@ -411,13 +412,15 @@ struct TagButton : ui::ChoiceButton {
 };
 
 
-static const std::string sortNames[] = {
-	"Last updated",
-	"Last used",
-	"Most used",
-	"Brand",
-	"Module name",
-	"Random",
+static std::vector<std::string> getSortNames() {
+	return {
+		string::translate("Browser.sort.lastUpdated"),
+		string::translate("Browser.sort.lastUsed"),
+		string::translate("Browser.sort.mostUsed"),
+		string::translate("Browser.sort.brand"),
+		string::translate("Browser.sort.moduleName"),
+		string::translate("Browser.sort.random"),
+	};
 };
 
 
@@ -427,8 +430,8 @@ struct SortButton : ui::ChoiceButton {
 	void onAction(const ActionEvent& e) override;
 
 	void step() override {
-		text = "Sort: ";
-		text += sortNames[settings::browserSort];
+		text = string::translate("Browser.sort");
+		text += getSortNames()[settings::browserSort];
 		ChoiceButton::step();
 	}
 };
@@ -440,7 +443,7 @@ struct ZoomButton : ui::ChoiceButton {
 	void onAction(const ActionEvent& e) override;
 
 	void step() override {
-		text = "Zoom: ";
+		text = string::translate("Browser.zoom");
 		text += string::f("%.0f%%", std::pow(2.f, settings::browserZoom) * 100.f);
 		ChoiceButton::step();
 	}
@@ -492,7 +495,7 @@ struct Browser : widget::OpaqueWidget {
 
 		searchField = new BrowserSearchField;
 		searchField->box.size.x = 150;
-		searchField->placeholder = "Search modules";
+		searchField->placeholder = string::translate("Browser.searchModules");
 		searchField->browser = this;
 		headerLayout->addChild(searchField);
 
@@ -511,13 +514,13 @@ struct Browser : widget::OpaqueWidget {
 
 		favoriteButton = new ui::OptionButton;
 		favoriteButton->quantity = favoriteQuantity;
-		favoriteButton->text = "Favorites";
+		favoriteButton->text = string::translate("Browser.favorites");
 		favoriteButton->box.size.x = 70;
 		headerLayout->addChild(favoriteButton);
 
 		clearButton = new ClearButton;
 		clearButton->box.size.x = 100;
-		clearButton->text = "Reset filters";
+		clearButton->text = string::translate("Browser.resetFilters");
 		clearButton->browser = this;
 		headerLayout->addChild(clearButton);
 
@@ -537,7 +540,7 @@ struct Browser : widget::OpaqueWidget {
 
 		UrlButton* libraryButton = new UrlButton;
 		libraryButton->box.size.x = 150;
-		libraryButton->text = "Browse VCV Library";
+		libraryButton->text = string::translate("Browser.browseLibrary");
 		libraryButton->url = "https://library.vcvrack.com/";
 		headerLayout->addChild(libraryButton);
 
@@ -776,7 +779,7 @@ struct Browser : widget::OpaqueWidget {
 			if (w->isVisible())
 				count++;
 		}
-		countLabel->text = string::f("%d %s", count, (count == 1) ? "module" : "modules");
+		countLabel->text = (count == 1) ? string::translate("Browser.modulesOne") : string::f(string::translate("Browser.modulesMany"), count);
 	}
 
 	void clear() {
@@ -892,7 +895,7 @@ inline void BrandButton::onAction(const ActionEvent& e) {
 	menu->box.size.x = box.size.x;
 
 	BrandItem* noneItem = new BrandItem;
-	noneItem->text = "All brands";
+	noneItem->text = string::translate("Browser.allBrands");
 	noneItem->brand = "";
 	noneItem->browser = browser;
 	menu->addChild(noneItem);
@@ -916,7 +919,7 @@ inline void BrandButton::onAction(const ActionEvent& e) {
 }
 
 inline void BrandButton::step() {
-	text = "Brand";
+	text = string::translate("Browser.brand");
 	if (!browser->brand.empty()) {
 		text += ": ";
 		text += browser->brand;
@@ -975,12 +978,12 @@ inline void TagButton::onAction(const ActionEvent& e) {
 	menu->box.size.x = box.size.x;
 
 	TagItem* noneItem = new TagItem;
-	noneItem->text = "All tags";
+	noneItem->text = string::translate("Browser.allTags");
 	noneItem->tagId = -1;
 	noneItem->browser = browser;
 	menu->addChild(noneItem);
 
-	menu->addChild(createMenuLabel(RACK_MOD_CTRL_NAME "+click to select multiple"));
+	menu->addChild(createMenuLabel(widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("Browser.tagsSelectMultiple")));
 	menu->addChild(new ui::MenuSeparator);
 
 	for (int tagId = 0; tagId < (int) tag::tagAliases.size(); tagId++) {
@@ -994,7 +997,7 @@ inline void TagButton::onAction(const ActionEvent& e) {
 }
 
 inline void TagButton::step() {
-	text = "Tags";
+	text = string::translate("Browser.tags");
 	if (!browser->tagIds.empty()) {
 		text += ": ";
 		bool firstTag = true;
@@ -1015,7 +1018,7 @@ inline void SortButton::onAction(const ActionEvent& e) {
 	menu->box.size.x = box.size.x;
 
 	for (int sortId = 0; sortId <= settings::BROWSER_SORT_RANDOM; sortId++) {
-		menu->addChild(createCheckMenuItem(sortNames[sortId], "",
+		menu->addChild(createCheckMenuItem(getSortNames()[sortId], "",
 			[=]() {return settings::browserSort == sortId;},
 			[=]() {
 				settings::browserSort = (settings::BrowserSort) sortId;

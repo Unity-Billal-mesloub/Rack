@@ -15,12 +15,9 @@ std::string getKeyName(int key) {
 		case GLFW_KEY_SPACE: return "Space";
 	}
 
-	const char* keyNameC = glfwGetKeyName(key, GLFW_KEY_UNKNOWN);
-	if (keyNameC) {
-		std::string keyName = keyNameC;
-		if (keyName.size() == 1)
-			keyName[0] = std::toupper((unsigned char) keyName[0]);
-		return keyName;
+	// Printable characters
+	if (key < 128) {
+		return std::string(1, (char) key);
 	}
 
 	// Unprintable keys with names
@@ -61,6 +58,29 @@ std::string getKeyCommandName(int key, int mods) {
 		modsName += RACK_MOD_ALT_NAME "+";
 	}
 	return modsName + getKeyName(key);
+}
+
+
+bool Widget::KeyBaseEvent::isKeyCommand(int key, int mods) const {
+	// Reject if mods don't match
+	if ((this->mods & RACK_MOD_MASK) != mods)
+		return false;
+	// Reject invalid keys
+	if (this->key < 32)
+		return false;
+	// Are both keys printable?
+	if (this->key < 128 && key < 128) {
+		// Is the event a printable ASCII character?
+		if (this->keyName.size() == 1) {
+			// Uppercase event key name
+			char k = this->keyName[0];
+			if (k >= 'a' && k <= 'z')
+				k += 'A' - 'a';
+			return k == key;
+		}
+	}
+	// Check equal QWERTY keys, printable or not
+	return this->key == key;
 }
 
 
@@ -364,7 +384,7 @@ bool EventState::handleKey(math::Vec pos, int key, int scancode, int action, int
 		eSelectKey.context = &cSelectKey;
 		eSelectKey.key = key;
 		eSelectKey.scancode = scancode;
-		const char* keyName = glfwGetKeyName(key, scancode);
+		const char* keyName = glfwGetKeyName(key, GLFW_KEY_UNKNOWN);
 		if (keyName)
 			eSelectKey.keyName = keyName;
 		eSelectKey.action = action;
@@ -381,7 +401,7 @@ bool EventState::handleKey(math::Vec pos, int key, int scancode, int action, int
 	eHoverKey.pos = pos;
 	eHoverKey.key = key;
 	eHoverKey.scancode = scancode;
-	const char* keyName = glfwGetKeyName(key, scancode);
+	const char* keyName = glfwGetKeyName(key, GLFW_KEY_UNKNOWN);
 	if (keyName)
 		eHoverKey.keyName = keyName;
 	eHoverKey.action = action;

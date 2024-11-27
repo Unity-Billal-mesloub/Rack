@@ -40,11 +40,11 @@ namespace rack {
 namespace widget {
 
 
-std::string getKeyName(int key);
-std::string getKeyCommandName(int key, int mods);
-
-
 struct Widget;
+
+
+std::string getKeyName(int key);
+std::string getKeyCommandName(int key, int mods = 0);
 
 
 /** A per-event state shared and writable by all widgets that recursively handle an event. */

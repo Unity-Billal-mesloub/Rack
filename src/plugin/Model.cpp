@@ -135,7 +135,8 @@ void Model::appendContextMenu(ui::Menu* menu, bool inBrowser) {
 	if (!tagIds.empty()) {
 		menu->addChild(createMenuLabel(string::translate("Model.tags")));
 		for (int tagId : tagIds) {
-			menu->addChild(createMenuLabel("• " + tag::getTag(tagId)));
+			std::string tag = string::translate("tag." + tag::getTag(tagId));
+			menu->addChild(createMenuLabel("• " + tag));
 		}
 	}
 

@@ -55,6 +55,11 @@ static void modelDbInit() {
 			// Get search fields for model
 			std::string tagStr;
 			for (int tagId : model->tagIds) {
+				// If non-English, add translation of tag before English tags
+				if (settings::language != "en") {
+					tagStr += string::translate("tag." + tag::getTag(tagId), settings::language);
+					tagStr += " ";
+				}
 				// Add all aliases of a tag
 				for (const std::string& tagAlias : tag::tagAliases[tagId]) {
 					tagStr += tagAlias;
@@ -68,7 +73,7 @@ static void modelDbInit() {
 				model->description,
 				tagStr,
 			};
-			// DEBUG("%s; %s; %s; %s; %s; %s", fields[0].c_str(), fields[1].c_str(), fields[2].c_str(), fields[3].c_str(), fields[4].c_str());
+			// DEBUG("%s; %s; %s; %s; %s", fields[0].c_str(), fields[1].c_str(), fields[2].c_str(), fields[3].c_str(), fields[4].c_str());
 			modelDb.addEntry(model, fields);
 		}
 	}
@@ -310,7 +315,8 @@ struct ModelBox : widget::OpaqueWidget {
 		text += string::translate("Browser.tooltipTags");
 		std::vector<std::string> tags;
 		for (int tagId : model->tagIds) {
-			tags.push_back(tag::getTag(tagId));
+			std::string tag = string::translate("tag." + tag::getTag(tagId));
+			tags.push_back(tag);
 		}
 		text += string::join(tags, ", ");
 		ui::Tooltip* tooltip = new ui::Tooltip;
@@ -988,7 +994,8 @@ inline void TagButton::onAction(const ActionEvent& e) {
 
 	for (int tagId = 0; tagId < (int) tag::tagAliases.size(); tagId++) {
 		TagItem* tagItem = new TagItem;
-		tagItem->text = tag::getTag(tagId);
+		std::string tag = string::translate("tag." + tag::getTag(tagId));
+		tagItem->text = tag;
 		tagItem->tagId = tagId;
 		tagItem->browser = browser;
 		tagItem->disabled = !browser->hasVisibleModel(browser->brand, {tagId}, browser->favorite);
@@ -1004,7 +1011,8 @@ inline void TagButton::step() {
 		for (int tagId : browser->tagIds) {
 			if (!firstTag)
 				text += ", ";
-			text += tag::getTag(tagId);
+			std::string tag = string::translate("tag." + tag::getTag(tagId));
+			text += tag;
 			firstTag = false;
 		}
 	}

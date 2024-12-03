@@ -22,8 +22,8 @@ struct LightTooltip : ui::Tooltip {
 			if (!lightInfo)
 				return;
 			// Label
-			text = lightInfo->getName();
-			text += " light";
+			std::string name = lightInfo->getName();
+			text = string::f(string::translate("ModuleLightWidget.light"), name);
 			// Description
 			std::string description = lightInfo->getDescription();
 			if (description != "") {

@@ -49,14 +49,14 @@ static void appendAudioDriverMenu(ui::Menu* menu, audio::Port* port) {
 
 void AudioDriverChoice::onAction(const ActionEvent& e) {
 	ui::Menu* menu = createMenu();
-	menu->addChild(createMenuLabel("Audio driver"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.audioDriver")));
 	appendAudioDriverMenu(menu, port);
 }
 
 void AudioDriverChoice::step() {
 	text = "";
 	if (box.size.x >= 200.0)
-		text += "Driver: ";
+		text += string::translate("AudioDisplay.driver");
 	audio::Driver* driver = port ? port->getDriver() : NULL;
 	std::string driverName = driver ? driver->getName() : "";
 	if (driverName != "") {
@@ -64,7 +64,7 @@ void AudioDriverChoice::step() {
 		color.a = 1.0;
 	}
 	else {
-		text += "(No driver)";
+		text += "(" + string::translate("AudioDisplay.noDriver") + ")";
 		color.a = 0.5;
 	}
 }
@@ -99,7 +99,7 @@ static void appendAudioDeviceMenu(ui::Menu* menu, audio::Port* port) {
 		AudioDeviceValueItem* item = new AudioDeviceValueItem;
 		item->port = port;
 		item->deviceId = -1;
-		item->text = "(No device)";
+		item->text = "(" + string::translate("AudioDisplay.noDevice") + ")";
 		item->rightText = CHECKMARK(item->deviceId == port->getDeviceId());
 		menu->addChild(item);
 	}
@@ -132,14 +132,14 @@ static void appendAudioDeviceMenu(ui::Menu* menu, audio::Port* port) {
 
 void AudioDeviceChoice::onAction(const ActionEvent& e) {
 	ui::Menu* menu = createMenu();
-	menu->addChild(createMenuLabel("Audio device"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.audioDevice")));
 	appendAudioDeviceMenu(menu, port);
 }
 
 void AudioDeviceChoice::step() {
 	text = "";
 	if (box.size.x >= 200.0)
-		text += "Device: ";
+		text += string::translate("AudioDisplay.device");
 	std::string detail = "";
 	if (port && port->getDevice())
 		detail = getDetailTemplate(port->getDevice()->getName(), port->getNumInputs(), port->inputOffset, port->getNumOutputs(), port->outputOffset);
@@ -149,10 +149,7 @@ void AudioDeviceChoice::step() {
 		color.a = 1.0;
 	}
 	else {
-		if (box.size.x >= 80.0)
-			text += "(No device)";
-		else
-			text += "No device";
+		text += string::translate("AudioDisplay.noDevice");
 		color.a = 0.5;
 	}
 }
@@ -184,7 +181,7 @@ static void appendAudioSampleRateMenu(ui::Menu* menu, audio::Port* port) {
 	sampleRates.insert(port->getSampleRate());
 
 	if (sampleRates.empty()) {
-		menu->addChild(createMenuLabel("(Locked by device)"));
+		menu->addChild(createMenuLabel("(" + string::translate("AudioDisplay.lockedByDevice") + ")"));
 	}
 	for (float sampleRate : sampleRates) {
 		if (sampleRate <= 0)
@@ -200,14 +197,14 @@ static void appendAudioSampleRateMenu(ui::Menu* menu, audio::Port* port) {
 
 void AudioSampleRateChoice::onAction(const ActionEvent& e) {
 	ui::Menu* menu = createMenu();
-	menu->addChild(createMenuLabel("Sample rate"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.sampleRate")));
 	appendAudioSampleRateMenu(menu, port);
 }
 
 void AudioSampleRateChoice::step() {
 	text = "";
 	if (box.size.x >= 100.0)
-		text += "Rate: ";
+		text += string::translate("AudioDisplay.sampleRateColon");
 	float sampleRate = port ? port->getSampleRate() : 0;
 	if (sampleRate > 0) {
 		text += string::f("%g", sampleRate / 1000.f);
@@ -247,7 +244,7 @@ static void appendAudioBlockSizeMenu(ui::Menu* menu, audio::Port* port) {
 	blockSizes.insert(port->getBlockSize());
 
 	if (blockSizes.empty()) {
-		menu->addChild(createMenuLabel("(Locked by device)"));
+		menu->addChild(createMenuLabel("(" + string::translate("AudioDisplay.lockedByDevice") + ")"));
 	}
 	for (int blockSize : blockSizes) {
 		if (blockSize <= 0)
@@ -264,14 +261,14 @@ static void appendAudioBlockSizeMenu(ui::Menu* menu, audio::Port* port) {
 
 void AudioBlockSizeChoice::onAction(const ActionEvent& e) {
 	ui::Menu* menu = createMenu();
-	menu->addChild(createMenuLabel("Block size"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.blockSize")));
 	appendAudioBlockSizeMenu(menu, port);
 }
 
 void AudioBlockSizeChoice::step() {
 	text = "";
 	if (box.size.x >= 100.0)
-		text += "Block size: ";
+		text += string::translate("AudioDisplay.blockSizeColon");
 	int blockSize = port ? port->getBlockSize() : 0;
 	if (blockSize > 0) {
 		text += string::f("%d", blockSize);
@@ -358,36 +355,36 @@ void AudioButton::onAction(const ActionEvent& e) {
 
 
 void appendAudioMenu(ui::Menu* menu, audio::Port* port) {
-	menu->addChild(createMenuLabel("Audio driver"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.audioDriver")));
 	appendAudioDriverMenu(menu, port);
 
 	menu->addChild(new ui::MenuSeparator);
-	menu->addChild(createMenuLabel("Audio device"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.audioDevice")));
 	appendAudioDeviceMenu(menu, port);
 
 	menu->addChild(new ui::MenuSeparator);
-	menu->addChild(createMenuLabel("Sample rate"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.sampleRate")));
 	appendAudioSampleRateMenu(menu, port);
 
 	menu->addChild(new ui::MenuSeparator);
-	menu->addChild(createMenuLabel("Block size"));
+	menu->addChild(createMenuLabel(string::translate("AudioDisplay.blockSize")));
 	appendAudioBlockSizeMenu(menu, port);
 
 	// Uncomment this to use sub-menus instead of one big menu.
 
-	// AudioDriverItem* driverItem = createMenuItem<AudioDriverItem>("Audio driver", RIGHT_ARROW);
+	// AudioDriverItem* driverItem = createMenuItem<AudioDriverItem>(string::translate("AudioDisplay.audioDriver"), RIGHT_ARROW);
 	// driverItem->port = port;
 	// menu->addChild(driverItem);
 
-	// AudioDeviceItem* deviceItem = createMenuItem<AudioDeviceItem>("Audio device", RIGHT_ARROW);
+	// AudioDeviceItem* deviceItem = createMenuItem<AudioDeviceItem>(string::translate("AudioDisplay.audioDevice"), RIGHT_ARROW);
 	// deviceItem->port = port;
 	// menu->addChild(deviceItem);
 
-	// AudioSampleRateItem* sampleRateItem = createMenuItem<AudioSampleRateItem>("Sample rate", RIGHT_ARROW);
+	// AudioSampleRateItem* sampleRateItem = createMenuItem<AudioSampleRateItem>(string::translate("AudioDisplay.sampleRate"), RIGHT_ARROW);
 	// sampleRateItem->port = port;
 	// menu->addChild(sampleRateItem);
 
-	// AudioBlockSizeItem* blockSizeItem = createMenuItem<AudioBlockSizeItem>("Block size", RIGHT_ARROW);
+	// AudioBlockSizeItem* blockSizeItem = createMenuItem<AudioBlockSizeItem>(string::translate("AudioDisplay.blockSize"), RIGHT_ARROW);
 	// blockSizeItem->port = port;
 	// menu->addChild(blockSizeItem);
 }

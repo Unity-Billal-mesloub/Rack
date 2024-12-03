@@ -17,6 +17,7 @@ std::string getKeyName(int key) {
 	// glfwGetKeyName overrides
 	switch (key) {
 		case GLFW_KEY_SPACE: return string::translate("key.space");
+		case GLFW_KEY_MINUS: return string::translate("key.minus");
 	}
 
 	// Printable characters

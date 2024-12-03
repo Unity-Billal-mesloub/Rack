@@ -274,14 +274,14 @@ void ParamWidget::createContextMenu() {
 
 	// Initialize
 	if (pq && pq->resetEnabled && pq->isBounded()) {
-		menu->addChild(createMenuItem(string::translate("ParamWidget.initialize"), switchQuantity ? "" : string::translate("ParamWidget.doubleClick"), [=]() {
+		menu->addChild(createMenuItem(string::translate("ParamWidget.initialize"), switchQuantity ? "" : string::translate("key.doubleClick"), [=]() {
 			this->resetAction();
 		}));
 	}
 
 	// Fine
 	if (!switchQuantity) {
-		menu->addChild(createMenuItem(string::translate("ParamWidget.fine"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("ParamWidget.fineDrag"), NULL, true));
+		menu->addChild(createMenuItem(string::translate("ParamWidget.fine"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("key.drag"), NULL, true));
 	}
 
 	// Unmap

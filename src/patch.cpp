@@ -145,7 +145,7 @@ void Manager::saveDialog() {
 		save(path);
 	}
 	catch (Exception& e) {
-		std::string message = string::f("Could not save patch: %s", e.what());
+		std::string message = string::f(string::translate("patch.saveFailed"), e.what());
 		osdialog_message(OSDIALOG_INFO, OSDIALOG_OK, message.c_str());
 		return;
 	}
@@ -195,7 +195,7 @@ void Manager::saveAsDialog(bool setPath) {
 		save(path);
 	}
 	catch (Exception& e) {
-		std::string message = string::f("Could not save patch: %s", e.what());
+		std::string message = string::f(string::translate("patch.saveFailed"), e.what());
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
 		return;
 	}
@@ -206,14 +206,14 @@ void Manager::saveAsDialog(bool setPath) {
 
 void Manager::saveTemplateDialog() {
 	// Even if <user>/template.vcv doesn't exist, this message is still valid because it overrides the <system>/template.vcv patch.
-	if (!osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, "Overwrite template patch?"))
+	if (!osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, string::translate("patch.overwriteTemplate").c_str()))
 		return;
 
 	try {
 		save(templatePath);
 	}
 	catch (Exception& e) {
-		std::string message = string::f("Could not save template patch: %s", e.what());
+		std::string message = string::f(string::translate("patch.saveTemplateFailed"), e.what());
 		osdialog_message(OSDIALOG_INFO, OSDIALOG_OK, message.c_str());
 		return;
 	}
@@ -316,7 +316,7 @@ void Manager::loadTemplate() {
 			load(factoryTemplatePath);
 		}
 		catch (Exception& e) {
-			std::string message = string::f("Could not load system template patch, clearing rack: %s", e.what());
+			std::string message = string::f(string::translate("patch.loadTemplateFailed"), e.what());
 			osdialog_message(OSDIALOG_INFO, OSDIALOG_OK, message.c_str());
 
 			clear();
@@ -331,7 +331,7 @@ void Manager::loadTemplate() {
 
 
 void Manager::loadTemplateDialog() {
-	if (!promptClear("The current patch is unsaved. Clear it and start a new patch?")) {
+	if (!promptClear(string::translate("patch.loadTemplateConfirm"))) {
 		return;
 	}
 	loadTemplate();
@@ -373,7 +373,7 @@ void Manager::loadAction(std::string path) {
 		load(path);
 	}
 	catch (Exception& e) {
-		std::string message = string::f("Could not load patch: %s", e.what());
+		std::string message = string::f(string::translate("patch.loadFailed"), e.what());
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
 		return;
 	}
@@ -385,7 +385,7 @@ void Manager::loadAction(std::string path) {
 
 
 void Manager::loadDialog() {
-	if (!promptClear("The current patch is unsaved. Clear it and open a new patch?"))
+	if (!promptClear(string::translate("patch.loadConfirm")))
 		return;
 
 	std::string dir;
@@ -415,7 +415,7 @@ void Manager::loadDialog() {
 
 
 void Manager::loadPathDialog(std::string path) {
-	if (!promptClear("The current patch is unsaved. Clear it and open the new patch?"))
+	if (!promptClear(string::translate("patch.loadConfirm")))
 		return;
 
 	loadAction(path);
@@ -425,7 +425,7 @@ void Manager::loadPathDialog(std::string path) {
 void Manager::revertDialog() {
 	if (path == "")
 		return;
-	if (!promptClear("Revert patch to the last saved state?"))
+	if (!promptClear(string::translate("patch.revertConfirm")))
 		return;
 
 	loadAction(path);
@@ -577,11 +577,7 @@ bool Manager::checkUnavailableModulesJson(json_t* rootJ) {
 
 	if (!pluginModuleSlugs.empty()) {
 		// Ask user to open browser
-		std::string msg = "This patch includes modules that are not installed:";
-		msg += "\n\n";
-		msg += string::join(pluginModuleSlugs, "\n");
-		msg += "\n\n";
-		msg += "Show missing modules on the VCV Library?";
+		std::string msg = string::f(string::translate("patch.unavailableModules"), string::join(pluginModuleSlugs, "\n"));
 		if (osdialog_message(OSDIALOG_WARNING, OSDIALOG_YES_NO, msg.c_str())) {
 			std::string url = "https://library.vcvrack.com/?modules=";
 			url += string::join(pluginModuleSlugs, ",");

@@ -114,7 +114,7 @@ void logIn(std::string email, std::string password) {
 		return;
 	DEFER({updateMutex.unlock();});
 
-	loginStatus = "Logging in...";
+	loginStatus = string::translate("library.loggingIn");
 	json_t* reqJ = json_object();
 	json_object_set_new(reqJ, "email", json_string(email.c_str()));
 	json_object_set_new(reqJ, "password", json_string(password.c_str()));
@@ -123,7 +123,7 @@ void logIn(std::string email, std::string password) {
 	json_decref(reqJ);
 
 	if (!resJ) {
-		loginStatus = "No response from server";
+		loginStatus = string::translate("library.noResponse");
 		return;
 	}
 	DEFER({json_decref(resJ);});
@@ -137,7 +137,7 @@ void logIn(std::string email, std::string password) {
 
 	json_t* tokenJ = json_object_get(resJ, "token");
 	if (!tokenJ) {
-		loginStatus = "No token in response";
+		loginStatus = string::translate("library.noToken");
 		return;
 	}
 
@@ -172,14 +172,14 @@ void checkUpdates() {
 	if (isSyncing)
 		return;
 
-	updateStatus = "Querying for updates...";
+	updateStatus = string::translate("library.queryingUpdates");
 
 	// Check user token
 	std::string userUrl = API_URL + "/user";
 	json_t* userResJ = network::requestJson(network::METHOD_GET, userUrl, NULL, getTokenCookies());
 	if (!userResJ) {
 		WARN("Request for user account failed");
-		updateStatus = "Could not query user account";
+		updateStatus = string::translate("library.queryAccountFailed");
 		return;
 	}
 	DEFER({json_decref(userResJ);});
@@ -202,7 +202,7 @@ void checkUpdates() {
 	json_decref(manifestsReq);
 	if (!manifestsResJ) {
 		WARN("Request for library manifests failed");
-		updateStatus = "Could not query plugin manifests";
+		updateStatus = string::translate("library.queryManifestsFailed");
 		return;
 	}
 	DEFER({json_decref(manifestsResJ);});
@@ -212,7 +212,7 @@ void checkUpdates() {
 	json_t* modulesResJ = network::requestJson(network::METHOD_GET, modulesUrl, NULL, getTokenCookies());
 	if (!modulesResJ) {
 		WARN("Request for user's modules failed");
-		updateStatus = "Could not query user's modules";
+		updateStatus = string::translate("library.queryModulesFailed");
 		return;
 	}
 	DEFER({json_decref(modulesResJ);});

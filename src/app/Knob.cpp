@@ -107,7 +107,7 @@ void Knob::onDragEnd(const DragEndEvent& e) {
 		if (!std::isnan(internal->oldValue) && internal->oldValue != newValue) {
 			// Push ParamChange history action
 			history::ParamChange* h = new history::ParamChange;
-			h->name = "move knob";
+			h->name = string::translate("Knob.history.move");
 			h->moduleId = module->id;
 			h->paramId = paramId;
 			h->oldValue = internal->oldValue;
@@ -302,7 +302,7 @@ void Knob::onLeave(const LeaveEvent& e) {
 		if (!std::isnan(internal->oldValue) && internal->oldValue != newValue) {
 			// Push ParamChange history action
 			history::ParamChange* h = new history::ParamChange;
-			h->name = "move knob";
+			h->name = string::translate("Knob.history.move");
 			h->moduleId = module->id;
 			h->paramId = paramId;
 			h->oldValue = internal->oldValue;

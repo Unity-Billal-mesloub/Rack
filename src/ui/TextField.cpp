@@ -360,25 +360,25 @@ void TextField::createContextMenu() {
 	ui::Menu* menu = createMenu();
 
 	TextFieldCutItem* cutItem = new TextFieldCutItem;
-	cutItem->text = "Cut";
+	cutItem->text = string::translate("TextField.cut");
 	cutItem->rightText = widget::getKeyCommandName(GLFW_KEY_X, RACK_MOD_CTRL);
 	cutItem->textField = this;
 	menu->addChild(cutItem);
 
 	TextFieldCopyItem* copyItem = new TextFieldCopyItem;
-	copyItem->text = "Copy";
+	copyItem->text = string::translate("TextField.copy");
 	copyItem->rightText = widget::getKeyCommandName(GLFW_KEY_C, RACK_MOD_CTRL);
 	copyItem->textField = this;
 	menu->addChild(copyItem);
 
 	TextFieldPasteItem* pasteItem = new TextFieldPasteItem;
-	pasteItem->text = "Paste";
+	pasteItem->text = string::translate("TextField.paste");
 	pasteItem->rightText = widget::getKeyCommandName(GLFW_KEY_V, RACK_MOD_CTRL);
 	pasteItem->textField = this;
 	menu->addChild(pasteItem);
 
 	TextFieldSelectAllItem* selectAllItem = new TextFieldSelectAllItem;
-	selectAllItem->text = "Select all";
+	selectAllItem->text = string::translate("TextField.selectAll");
 	selectAllItem->rightText = widget::getKeyCommandName(GLFW_KEY_A, RACK_MOD_CTRL);
 	selectAllItem->textField = this;
 	menu->addChild(selectAllItem);

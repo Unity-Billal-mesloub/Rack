@@ -31,14 +31,14 @@ static void appendMidiDriverMenu(ui::Menu* menu, midi::Port* port) {
 
 void MidiDriverChoice::onAction(const ActionEvent& e) {
 	ui::Menu* menu = createMenu();
-	menu->addChild(createMenuLabel("MIDI driver"));
+	menu->addChild(createMenuLabel(string::translate("MidiDisplay.driver")));
 	appendMidiDriverMenu(menu, port);
 }
 
 void MidiDriverChoice::step() {
 	text = (port && port->driver) ? port->getDriver()->getName() : "";
 	if (text.empty()) {
-		text = "(No driver)";
+		text = "(" + string::translate("MidiDisplay.noDriver") + ")";
 		color.a = 0.5f;
 	}
 	else {
@@ -72,7 +72,7 @@ static void appendMidiDeviceMenu(ui::Menu* menu, midi::Port* port) {
 		MidiDeviceValueItem* item = new MidiDeviceValueItem;
 		item->port = port;
 		item->deviceId = -1;
-		item->text = "(No device)";
+		item->text = "(" + string::translate("MidiDisplay.noDevice") + ")";
 		item->rightText = CHECKMARK(item->deviceId == port->getDeviceId());
 		menu->addChild(item);
 	}
@@ -89,14 +89,14 @@ static void appendMidiDeviceMenu(ui::Menu* menu, midi::Port* port) {
 
 void MidiDeviceChoice::onAction(const ActionEvent& e) {
 	ui::Menu* menu = createMenu();
-	menu->addChild(createMenuLabel("MIDI device"));
+	menu->addChild(createMenuLabel(string::translate("MidiDisplay.device")));
 	appendMidiDeviceMenu(menu, port);
 }
 
 void MidiDeviceChoice::step() {
 	text = (port && port->device) ? port->getDevice()->getName() : "";
 	if (text.empty()) {
-		text = "(No device)";
+		text = "(" + string::translate("MidiDisplay.noDevice") + ")";
 		color.a = 0.5f;
 	}
 	else {
@@ -138,12 +138,12 @@ static void appendMidiChannelMenu(ui::Menu* menu, midi::Port* port) {
 
 void MidiChannelChoice::onAction(const ActionEvent& e) {
 	ui::Menu* menu = createMenu();
-	menu->addChild(createMenuLabel("MIDI channel"));
+	menu->addChild(createMenuLabel(string::translate("MidiDisplay.channel")));
 	appendMidiChannelMenu(menu, port);
 }
 
 void MidiChannelChoice::step() {
-	text = port ? port->getChannelName(port->getChannel()) : "Channel 1";
+	text = port ? port->getChannelName(port->getChannel()) : string::translate("MidiDisplay.channel1");
 }
 
 struct MidiChannelItem : ui::MenuItem {
@@ -203,28 +203,28 @@ void MidiButton::onAction(const ActionEvent& e) {
 
 
 void appendMidiMenu(ui::Menu* menu, midi::Port* port) {
-	menu->addChild(createMenuLabel("MIDI driver"));
+	menu->addChild(createMenuLabel(string::translate("MidiDisplay.driver")));
 	appendMidiDriverMenu(menu, port);
 
 	menu->addChild(new ui::MenuSeparator);
-	menu->addChild(createMenuLabel("MIDI device"));
+	menu->addChild(createMenuLabel(string::translate("MidiDisplay.device")));
 	appendMidiDeviceMenu(menu, port);
 
 	menu->addChild(new ui::MenuSeparator);
-	// menu->addChild(createMenuLabel("MIDI channel"));
+	// menu->addChild(createMenuLabel(string::translate("MidiDisplay.channel")));
 	// appendMidiChannelMenu(menu, port);
 
 	// Uncomment this to use sub-menus instead of one big menu.
 
-	// MidiDriverItem* driverItem = createMenuItem<MidiDriverItem>("MIDI driver", RIGHT_ARROW);
+	// MidiDriverItem* driverItem = createMenuItem<MidiDriverItem>(string::translate("MidiDisplay.driver"), RIGHT_ARROW);
 	// driverItem->port = port;
 	// menu->addChild(driverItem);
 
-	// MidiDeviceItem* deviceItem = createMenuItem<MidiDeviceItem>("MIDI device", RIGHT_ARROW);
+	// MidiDeviceItem* deviceItem = createMenuItem<MidiDeviceItem>(string::translate("MidiDisplay.device"), RIGHT_ARROW);
 	// deviceItem->port = port;
 	// menu->addChild(deviceItem);
 
-	MidiChannelItem* channelItem = createMenuItem<MidiChannelItem>("MIDI channel", RIGHT_ARROW);
+	MidiChannelItem* channelItem = createMenuItem<MidiChannelItem>(string::translate("MidiDisplay.channel"), RIGHT_ARROW);
 	channelItem->port = port;
 	menu->addChild(channelItem);
 }

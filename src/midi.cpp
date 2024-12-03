@@ -150,9 +150,9 @@ void Port::setChannel(int channel) {
 
 std::string Port::getChannelName(int channel) {
 	if (channel < 0)
-		return "All channels";
+		return string::translate("midi.allChannels");
 	else
-		return string::f("Channel %d", channel + 1);
+		return string::f(string::translate("midi.channelNum"), channel + 1);
 }
 
 json_t* Port::toJson() {

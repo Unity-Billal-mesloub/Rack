@@ -286,7 +286,7 @@ void PortWidget::createContextMenu() {
 	std::vector<CableWidget*> cws = APP->scene->rack->getCompleteCablesOnPort(this);
 	CableWidget* topCw = cws.empty() ? NULL : cws.back();
 
-	menu->addChild(createMenuItem(string::translate("PortWidget.deleteTopCable"), widget::getKeyCommandName(0, RACK_MOD_SHIFT) + string::translate("PortWidget.click"),
+	menu->addChild(createMenuItem(string::translate("PortWidget.deleteTopCable"), widget::getKeyCommandName(0, RACK_MOD_SHIFT) + string::translate("key.click"),
 		[=]() {
 			if (!weakThis)
 				return;
@@ -296,7 +296,7 @@ void PortWidget::createContextMenu() {
 	));
 
 	{
-		PortCloneCableItem* item = createMenuItem<PortCloneCableItem>(string::translate("PortWidget.cloneTopCable"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("PortWidget.drag"));
+		PortCloneCableItem* item = createMenuItem<PortCloneCableItem>(string::translate("PortWidget.cloneTopCable"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("key.drag"));
 		item->disabled = !topCw;
 		item->pw = this;
 		item->cw = topCw;
@@ -304,7 +304,7 @@ void PortWidget::createContextMenu() {
 	}
 
 	{
-		PortCreateCableItem* item = createMenuItem<PortCreateCableItem>(string::translate("PortWidget.createCableTop"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("PortWidget.drag"));
+		PortCreateCableItem* item = createMenuItem<PortCreateCableItem>(string::translate("PortWidget.createCableTop"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("key.drag"));
 		item->pw = this;
 		menu->addChild(item);
 	}
@@ -326,7 +326,7 @@ void PortWidget::createContextMenu() {
 
 	if (!cws.empty()) {
 		menu->addChild(new ui::MenuSeparator);
-		menu->addChild(createMenuLabel(string::translate("PortWidget.clickDrag") + string::translate("PortWidget.grabCable")));
+		menu->addChild(createMenuLabel(string::translate("key.clickDrag") + string::translate("PortWidget.grabCable")));
 
 		// Cable items
 		for (auto it = cws.rbegin(); it != cws.rend(); it++) {

@@ -15,9 +15,7 @@ std::string PortInfo::getName() {
 
 std::string PortInfo::getFullName() {
 	std::string name = getName();
-	name += " ";
-	name += (type == Port::INPUT) ? "input" : "output";
-	return name;
+	return string::f((type == Port::INPUT) ? string::translate("PortInfo.input") : string::translate("PortInfo.output"), name);
 }
 
 

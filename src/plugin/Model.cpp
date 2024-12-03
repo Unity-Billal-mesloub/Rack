@@ -198,7 +198,9 @@ void Model::appendContextMenu(ui::Menu* menu, bool inBrowser) {
 	}
 
 	// Favorite
-	std::string favoriteRightText = inBrowser ? (RACK_MOD_CTRL_NAME "+click") : "";
+	std::string favoriteRightText;
+	if (inBrowser)
+		favoriteRightText = widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("key.click");
 	if (isFavorite())
 		favoriteRightText += " " CHECKMARK_STRING;
 	menu->addChild(createMenuItem(string::translate("Model.favorite"), favoriteRightText,

@@ -31,23 +31,36 @@ struct TipInfo {
 };
 
 
-// Remember to use “smart quotes.”
-static const std::vector<TipInfo> tipInfos = {
-	{"To add a module to your patch, right-click an empty rack space or press Enter. Then click and drag a module from the Module Browser into the desired rack space.\n\nTo select multiple modules, click and drag on empty rack space.", "", ""},
-	{"To move around your patch, use the scroll bars, drag while holding the middle mouse button, " RACK_MOD_ALT_NAME "+click and drag, or hold the arrow keys. Arrow key movement speed can be adjusted by holding " RACK_MOD_CTRL_NAME ", " RACK_MOD_SHIFT_NAME ", or " RACK_MOD_CTRL_NAME "+" RACK_MOD_SHIFT_NAME ".\n\nTo zoom in and out, drag the Zoom slider in the View menu, hold " RACK_MOD_CTRL_NAME " and scroll, or press " RACK_MOD_CTRL_NAME "+= and " RACK_MOD_CTRL_NAME "+minus.", "", ""},
-	{"You can use Rack in fullscreen mode by selecting “View > Fullscreen“ or pressing F11.\n\nIn fullscreen mode, the menu bar and scroll bars are hidden. This is ideal for screen recording with VCV Recorder.", "Get VCV Recorder", "https://vcvrack.com/Recorder"},
-	{"You can browse thousands of modules on the VCV Library website.\n\nRegister for a VCV account, log into Rack using the Library menu, and browse the VCV Library to add or purchase modules. Keep all plugins up to date by clicking “Library > Update all”.", "VCV Library", "https://library.vcvrack.com/"},
-	{"Some developers of free plugins accept donations. Right-click your favorite module's panel and select “Info > Donate”.\n\nYou can also donate via the module's VCV Library page.", "VCV Library", "https://library.vcvrack.com/"},
-	{"Want to use VCV Rack in your DAW? VCV Rack Pro is available for VST2, VST3, Audio Unit, and CLAP hosts.\n\nSupported DAWs include Ableton Live, Cubase, FL Studio, Reason, Bitwig, Reaper, Mixbus, Studio One, Cakewalk, Logic Pro, and GarageBand.", "Learn more", "https://vcvrack.com/Rack"},
-	{"You can learn more about VCV Rack by browsing the official manual.", "VCV Rack manual", "https://vcvrack.com/manual/"},
-	{"Follow VCV Rack on Twitter for new module announcements, development news, and featured artists/music.", "Twitter @vcvrack", "https://twitter.com/vcvrack"},
-	{"Patch cables in Rack can carry up to 16 signals. You can use this ability to build polyphonic patches using modules having the “Polyphonic” tag. Cables carrying more than 1 signal appear thicker than normal cables. To try out polyphony, add the VCV MIDI-to-CV module to your patch, right-click its panel, and select your desired number of polyphonic channels.", "Learn more about polyphony in VCV Rack", "https://vcvrack.com/manual/Polyphony"},
-	{"Know C++ programming and want to create your own modules for Rack? Developing Rack modules is a great way to learn digital signal processing and quickly test your ideas with an easy-to-learn platform.\n\nDownload the Rack SDK and follow the development tutorial to get started.", "Plugin Development Tutorial", "https://vcvrack.com/manual/PluginDevelopmentTutorial"},
-	{"Wondering how to use a particular module? Right-click its panel and choose “Info > User manual”.\n\nYou can also open the module's Info menu to view the module's tags, website, VCV Library page, and changelog, if available.", "", ""},
-	{"Did you know that the VCV Library is integrated with ModularGrid? If a module is available as a hardware Eurorack module, right-click its panel and choose “Info > ModularGrid”, or click the “ModularGrid” link on its VCV Library page.\n\nOn ModularGrid.net, search for the VCV logo on certain module's entry pages.", "Example: Grayscale Permutation on ModularGrid", "https://www.modulargrid.net/e/grayscale-permutation-18hp"},
-	{"When any context menu is open, you can " RACK_MOD_CTRL_NAME "+click a menu item to keep the menu open. This can be useful when browsing module presets or settings.", "", ""},
-	// {"", "", ""},
-};
+static std::vector<TipInfo> getTipInfos() {
+	// Remember to use “smart quotes.”
+	return {
+		{string::translate("TipWindow.addModule"), "", ""},
+		{string::f(string::translate("TipWindow.moveRack"),
+			widget::getKeyCommandName(0, RACK_MOD_ALT) + string::translate("key.click"),
+			string::translate("key.ctrl"),
+			string::translate("key.shift"),
+			string::translate("key.ctrl"),
+			string::translate("key.shift"),
+			string::translate("key.ctrl"),
+			widget::getKeyCommandName(GLFW_KEY_EQUAL, RACK_MOD_CTRL),
+			widget::getKeyCommandName(GLFW_KEY_MINUS, RACK_MOD_CTRL)),
+		"", ""},
+		{string::translate("TipWindow.fullscreen"), string::translate("TipWindow.fullscreenButton"), "https://vcvrack.com/Recorder"},
+		{string::translate("TipWindow.library"), string::translate("TipWindow.libraryButton"), "https://library.vcvrack.com/"},
+		{string::translate("TipWindow.donation"), string::translate("TipWindow.libraryButton"), "https://library.vcvrack.com/"},
+		{string::translate("TipWindow.daw"), string::translate("TipWindow.learnMore"), "https://vcvrack.com/Rack"},
+		{string::translate("TipWindow.manual"), string::translate("TipWindow.manualButton"), "https://vcvrack.com/manual/"},
+		{string::translate("TipWindow.twitter"), string::translate("TipWindow.twitterHandle"), "https://twitter.com/vcvrack"},
+		{string::translate("TipWindow.polyphony"), string::translate("TipWindow.polyphonyButton"), "https://vcvrack.com/manual/Polyphony"},
+		{string::translate("TipWindow.develop"), string::translate("TipWindow.developButton"), "https://vcvrack.com/manual/PluginDevelopmentTutorial"},
+		{string::translate("TipWindow.moduleManual"), "", ""},
+		{string::translate("TipWindow.modularGrid"), string::translate("TipWindow.modularGridButton"), "https://www.modulargrid.net/e/grayscale-permutation-18hp"},
+		{string::f(string::translate("TipWindow.menuKeepOpen"),
+			widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("key.click")),
+		"", ""},
+		// {"", "", ""},
+	};
+}
 
 
 struct TipWindow : widget::OpaqueWidget {
@@ -74,7 +87,7 @@ struct TipWindow : widget::OpaqueWidget {
 		// header->box.size.x = box.size.x - 2*margin;
 		header->box.size.y = 20;
 		header->fontSize = 20;
-		header->text = "Welcome to " + APP_NAME + " " + APP_EDITION_NAME + " " + APP_VERSION;
+		header->text = string::f(string::translate("TipWindow.welcome"), APP_NAME + " " + APP_EDITION_NAME + " " + APP_VERSION);
 		layout->addChild(header);
 
 		label = new ui::Label;
@@ -108,7 +121,7 @@ struct TipWindow : widget::OpaqueWidget {
 
 		ui::OptionButton* showButton = new ui::OptionButton;
 		showButton->box.size.x = 200;
-		showButton->text = "Show tips at startup";
+		showButton->text = string::translate("TipWindow.startup");
 		showButton->quantity = &showQuantity;
 		buttonLayout->addChild(showButton);
 
@@ -120,7 +133,7 @@ struct TipWindow : widget::OpaqueWidget {
 		};
 		PreviousButton* prevButton = new PreviousButton;
 		prevButton->box.size.x = buttonWidth;
-		prevButton->text = "◀  Previous";
+		prevButton->text = "◀  " + string::translate("TipWindow.previous");
 		prevButton->tipWindow = this;
 		buttonLayout->addChild(prevButton);
 
@@ -132,7 +145,7 @@ struct TipWindow : widget::OpaqueWidget {
 		};
 		NextButton* nextButton = new NextButton;
 		nextButton->box.size.x = buttonWidth;
-		nextButton->text = "▶  Next";
+		nextButton->text = "▶  " + string::translate("TipWindow.next");
 		nextButton->tipWindow = this;
 		buttonLayout->addChild(nextButton);
 
@@ -144,7 +157,7 @@ struct TipWindow : widget::OpaqueWidget {
 		};
 		CloseButton* closeButton = new CloseButton;
 		closeButton->box.size.x = buttonWidth;
-		closeButton->text = "✖  Close";
+		closeButton->text = "✖  " + string::translate("TipWindow.close");
 		closeButton->tipWindow = this;
 		buttonLayout->addChild(closeButton);
 
@@ -155,6 +168,8 @@ struct TipWindow : widget::OpaqueWidget {
 	}
 
 	void advanceTip(int delta = 1) {
+		std::vector<TipInfo> tipInfos = getTipInfos();
+
 		// Increment tip index
 		settings::tipIndex = math::eucMod(settings::tipIndex + delta, (int) tipInfos.size());
 

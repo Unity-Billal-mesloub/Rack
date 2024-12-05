@@ -351,7 +351,7 @@ static void loadTranslations() {
 		json_error_t error;
 		json_t* rootJ = json_loadf(file, 0, &error);
 		if (!rootJ) {
-			WARN("Translation file has invalid JSON at %d:%d %s", error.line, error.column, error.text);
+			WARN("Translation file %s has invalid JSON at %d:%d %s", path.c_str(), error.line, error.column, error.text);
 			continue;
 		}
 		DEFER({json_decref(rootJ);});

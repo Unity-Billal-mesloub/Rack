@@ -362,13 +362,20 @@ Window::Window() {
 		throw Exception("Could not initialize NanoVG");
 	}
 
-	// Load default UI font
+	// Load UI fonts
 	uiFont = loadFont(asset::system("res/fonts/DejaVuSans.ttf"));
-	std::shared_ptr<Font> jpFont = loadFont(asset::system("res/fonts/NotoSansJP-Medium.otf"));
-	nvgAddFallbackFontId(vg, uiFont->handle, jpFont->handle);
-	std::shared_ptr<Font> emojiFont = loadFont(asset::system("res/fonts/NotoEmoji-Medium.ttf"));
-	nvgAddFallbackFontId(vg, uiFont->handle, emojiFont->handle);
-	bndSetFont(uiFont->handle);
+	if (uiFont) {
+		std::shared_ptr<Font> jpFont = loadFont(asset::system("res/fonts/NotoSansJP-Medium.otf"));
+		if (jpFont)
+			nvgAddFallbackFontId(vg, uiFont->handle, jpFont->handle);
+		std::shared_ptr<Font> scFont = loadFont(asset::system("res/fonts/NotoSansSC-Medium.otf"));
+		if (scFont)
+			nvgAddFallbackFontId(vg, uiFont->handle, scFont->handle);
+		std::shared_ptr<Font> emojiFont = loadFont(asset::system("res/fonts/NotoEmoji-Medium.ttf"));
+		if (emojiFont)
+			nvgAddFallbackFontId(vg, uiFont->handle, emojiFont->handle);
+		bndSetFont(uiFont->handle);
+	}
 
 	if (APP->scene) {
 		widget::Widget::ContextCreateEvent e;

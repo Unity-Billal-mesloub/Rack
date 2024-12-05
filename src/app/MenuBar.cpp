@@ -995,7 +995,10 @@ struct HelpButton : MenuButton {
 			auto it = std::find(languages.begin(), languages.end(), settings::language);
 			return it - languages.begin();
 		}, [=](size_t i) {
-			settings::language = get(languages, i, "en");
+			std::string language = get(languages, i, "en");
+			if (settings::language == language)
+				return;
+			settings::language = language;
 			// Request restart
 			std::string msg = string::f(string::translate("MenuBar.help.language.restart"), string::translate("language"));
 			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, msg.c_str())) {

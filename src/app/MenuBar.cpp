@@ -985,25 +985,8 @@ struct HelpButton : MenuButton {
 		menu->cornerFlags = BND_CORNER_TOP;
 		menu->box.pos = getAbsoluteOffset(math::Vec(0, box.size.y));
 
-		// Language
-		std::vector<std::string> languages = string::getLanguages();
-		std::vector<std::string> languageLabels;
-		for (const std::string& language : languages) {
-			languageLabels.push_back(string::translate("language", language));
-		}
-		menu->addChild(createIndexSubmenuItem("🌐 " + string::translate("MenuBar.help.language"), languageLabels, [=]() {
-			auto it = std::find(languages.begin(), languages.end(), settings::language);
-			return it - languages.begin();
-		}, [=](size_t i) {
-			std::string language = get(languages, i, "en");
-			if (settings::language == language)
-				return;
-			settings::language = language;
-			// Request restart
-			std::string msg = string::f(string::translate("MenuBar.help.language.restart"), string::translate("language"));
-			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, msg.c_str())) {
-				APP->window->close();
-			}
+		menu->addChild(createSubmenuItem("🌐 " + string::translate("MenuBar.help.language"), "", [=](ui::Menu* menu) {
+			appendLanguageMenu(menu);
 		}));
 
 		menu->addChild(createMenuItem(string::translate("MenuBar.help.tips"), "", [=]() {
@@ -1172,6 +1155,24 @@ struct MenuBar : widget::OpaqueWidget {
 widget::Widget* createMenuBar() {
 	menuBar::MenuBar* menuBar = new menuBar::MenuBar;
 	return menuBar;
+}
+
+
+void appendLanguageMenu(ui::Menu* menu) {
+	for (const std::string& language : string::getLanguages()) {
+		menu->addChild(createCheckMenuItem(string::translate("language", language), "", [=]() {
+			return settings::language == language;
+		}, [=]() {
+			if (settings::language == language)
+				return;
+			settings::language = language;
+			// Request restart
+			std::string msg = string::f(string::translate("MenuBar.help.language.restart"), string::translate("language"));
+			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, msg.c_str())) {
+				APP->window->close();
+			}
+		}));
+	}
 }
 
 

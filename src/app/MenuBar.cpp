@@ -959,6 +959,7 @@ struct LibraryButton : MenuButton {
 			library::restartRequested = false;
 			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, string::translate("MenuBar.library.restart").c_str())) {
 				APP->window->close();
+				settings::restart = true;
 			}
 		}
 
@@ -1170,6 +1171,7 @@ void appendLanguageMenu(ui::Menu* menu) {
 			std::string msg = string::f(string::translate("MenuBar.help.language.restart"), string::translate("language"));
 			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, msg.c_str())) {
 				APP->window->close();
+				settings::restart = true;
 			}
 		}));
 	}

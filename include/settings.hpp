@@ -24,6 +24,8 @@ extern std::string settingsPath;
 extern bool devMode;
 extern bool headless;
 extern bool isPlugin;
+/** Requests to restart the application on exit. */
+extern bool restart;
 
 // Persistent state, serialized to settings.json.
 

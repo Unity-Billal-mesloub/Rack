@@ -312,6 +312,11 @@ int main(int argc, char* argv[]) {
 	INFO("Destroying logger");
 	logger::destroy();
 
+	// Restart executable if requested
+	if (settings::restart) {
+		settings::restart = false;
+		return main(argc, argv);
+	}
 	return 0;
 }
 

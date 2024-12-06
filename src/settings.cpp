@@ -19,6 +19,7 @@ std::string settingsPath;
 bool devMode = false;
 bool headless = false;
 bool isPlugin = false;
+bool restart = false;
 
 std::string language = "en";
 bool safeMode = false;

@@ -1,7 +1,7 @@
 RACK_DIR ?= .
 EDITION := Free
 VERSION_MAJOR := 2
-VERSION := $(shell jq -r .version Core.json)
+VERSION := $(VERSION_MAJOR).6.$(shell git rev-parse --short HEAD)
 
 FLAGS += -Iinclude -Idep/include
 

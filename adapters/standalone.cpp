@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 	// Handle will be closed by Windows when the process ends
 	HANDLE instanceMutex = CreateMutexW(NULL, true, string::UTF8toUTF16(APP_NAME).c_str());
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		osdialog_message(OSDIALOG_ERROR, OSDIALOG_OK, string::translate("standalone.multipleInstances"));
+		osdialog_message(OSDIALOG_ERROR, OSDIALOG_OK, string::translate("standalone.multipleInstances").c_str());
 		exit(1);
 	}
 	(void) instanceMutex;
@@ -314,6 +314,9 @@ int main(int argc, char* argv[]) {
 
 	// Restart executable if requested
 	if (settings::restart) {
+#if defined ARCH_WIN
+		CloseHandle(instanceMutex);
+#endif
 		settings::restart = false;
 		return main(argc, argv);
 	}

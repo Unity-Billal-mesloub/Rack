@@ -7,6 +7,50 @@ namespace rack {
 namespace ui {
 
 
+/** Calculates the number of bytes in a valid UTF-8 codepoint.
+Returns 0 if codepoint is invalid, but does not fully check validity.
+*/
+static size_t utf8CodepointSize(const char* s) {
+	// if (!s) return 0;
+	// Check if at end
+	if (!s[0]) return 0;
+	// First byte signals size
+	// 0b0xxxxxxx
+	if ((s[0] & 0x80) == 0x00) return 1;
+	// Check for continuation byte 0b10xxxxxx
+	// if ((s[1] & 0xc0) != 0x80) return 0;
+	// 0b110xxxxx
+	if ((s[0] & 0xe0) == 0xc0) return 2;
+	// if ((s[2] & 0xc0) != 0x80) return 0;
+	// 0b1110xxxx
+	if ((s[0] & 0xf0) == 0xe0) return 3;
+	// if ((s[3] & 0xc0) != 0x80) return 0;
+	// 0b11110xxx
+	if ((s[0] & 0xf8) == 0xf0) return 4;
+	// Invalid first UTF-8 byte
+	return 0;
+}
+
+
+/** Finds the byte index of the next codepoint in a valid UTF-8 string. */
+static size_t utf8Next(const char* s, size_t i) {
+	return i + utf8CodepointSize(&s[i]);
+}
+
+/** Finds the byte index of the previous codepoint in a valid UTF-8 string. */
+static size_t utf8Prev(const char* s, size_t i) {
+	if (i == 0) return 0;
+	// Check the previous 3 bytes
+	for (size_t j = 1; j <= 3; j++) {
+		i--;
+		if (i == 0) return 0;
+		// Check for continuation byte 0b10xxxxxx
+		if ((s[i] & 0xc0) != 0x80) return i;
+	}
+	return i;
+}
+
+
 struct TextFieldCopyItem : ui::MenuItem {
 	WeakPtr<TextField> textField;
 	void onAction(const ActionEvent& e) override {
@@ -110,8 +154,10 @@ void TextField::onButton(const ButtonEvent& e) {
 }
 
 void TextField::onSelectText(const SelectTextEvent& e) {
-	if (e.codepoint < 128) {
-		std::string newText(1, (char) e.codepoint);
+	const char* bytes = (const char*) &e.codepoint;
+	size_t size = utf8CodepointSize(bytes);
+	if (size > 0) {
+		std::string newText(bytes, size);
 		insertText(newText);
 	}
 	e.consume(this);
@@ -122,7 +168,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		// Backspace
 		if (e.isKeyCommand(GLFW_KEY_BACKSPACE)) {
 			if (cursor == selection) {
-				cursor = std::max(cursor - 1, 0);
+				cursor = utf8Prev(text.c_str(), cursor);
 			}
 			insertText("");
 			e.consume(this);
@@ -138,7 +184,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		// Delete
 		if (e.isKeyCommand(GLFW_KEY_DELETE)) {
 			if (cursor == selection) {
-				cursor = std::min(cursor + 1, (int) text.size());
+				cursor = utf8Next(text.c_str(), cursor);
 			}
 			insertText("");
 			e.consume(this);
@@ -153,7 +199,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		}
 		// Left
 		if (e.isKeyCommand(GLFW_KEY_LEFT)) {
-			cursor = std::max(cursor - 1, 0);
+			cursor = utf8Prev(text.c_str(), cursor);
 			selection = cursor;
 			e.consume(this);
 		}
@@ -163,7 +209,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_LEFT, GLFW_MOD_SHIFT)) {
-			cursor = std::max(cursor - 1, 0);
+			cursor = utf8Prev(text.c_str(), cursor);
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
@@ -172,7 +218,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		}
 		// Right
 		if (e.isKeyCommand(GLFW_KEY_RIGHT)) {
-			cursor = std::min(cursor + 1, (int) text.size());
+			cursor = utf8Next(text.c_str(), cursor);
 			selection = cursor;
 			e.consume(this);
 		}
@@ -182,7 +228,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_RIGHT, GLFW_MOD_SHIFT)) {
-			cursor = std::min(cursor + 1, (int) text.size());
+			cursor = utf8Next(text.c_str(), cursor);
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
@@ -342,6 +388,7 @@ void TextField::pasteClipboard() {
 }
 
 void TextField::cursorToPrevWord() {
+	// This works for valid UTF-8 text
 	size_t pos = text.rfind(' ', std::max(cursor - 2, 0));
 	if (pos == std::string::npos)
 		cursor = 0;
@@ -350,6 +397,7 @@ void TextField::cursorToPrevWord() {
 }
 
 void TextField::cursorToNextWord() {
+	// This works for valid UTF-8 text
 	size_t pos = text.find(' ', std::min(cursor + 1, (int) text.size()));
 	if (pos == std::string::npos)
 		pos = text.size();

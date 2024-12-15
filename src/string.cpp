@@ -246,6 +246,157 @@ std::string formatTimeISO(double timestamp) {
 }
 
 
+std::string UTF32toUTF8(const std::u32string& s32) {
+	std::string s8;
+	// Pre-allocate maximum possible size
+	s8.reserve(s32.length() * 4);
+
+	for (char32_t c : s32) {
+		// 7-bit codepoint to 1-byte sequence
+		if (c <= 0x7F) {
+			s8.push_back(c);
+		}
+		// 11-bit codepoint to 2-byte sequence
+		else if (c <= 0x7FF) {
+			s8.push_back(0xC0 | ((c >> 6) & 0x1F));
+			s8.push_back(0x80 | (c & 0x3F));
+		}
+		// 16-bit codepoint to 3-byte sequence
+		else if (c <= 0xFFFF) {
+			s8.push_back(0xE0 | ((c >> 12) & 0x0F));
+			s8.push_back(0x80 | ((c >> 6) & 0x3F));
+			s8.push_back(0x80 | (c & 0x3F));
+		}
+		// 21-bit codepoint to 4-byte sequence
+		else if (c <= 0x10FFFF) {
+			s8.push_back(0xF0 | ((c >> 18) & 0x07));
+			s8.push_back(0x80 | ((c >> 12) & 0x3F));
+			s8.push_back(0x80 | ((c >> 6) & 0x3F));
+			s8.push_back(0x80 | (c & 0x3F));
+		}
+		// invalid codepoint
+		else {
+			// Ignore character
+		}
+	}
+
+	s8.shrink_to_fit();
+	return s8;
+}
+
+
+std::u32string UTF8toUTF32(const std::string& s8) {
+	std::u32string s32;
+	// Pre-allocate maximum possible size
+	s32.reserve(s8.size());
+
+	for (size_t i = 0; i < s8.size();) {
+		char32_t c32;
+		size_t size;
+
+		// Determine the number of bytes in the UTF-8 sequence
+		if ((s8[i] & 0x80) == 0x00) {
+			// 1-byte sequence
+			c32 = s8[i];
+			size = 1;
+		}
+		else if ((s8[i] & 0xE0) == 0xC0) {
+			// 2-byte sequence
+			if (i + 1 >= s8.size())
+				break;
+			c32 = (char32_t(s8[i] & 0x1F) << 6) |
+			      (char32_t(s8[i + 1]) & 0x3F);
+			size = 2;
+			// Ignore overlong sequence
+			if (c32 < 0x80)
+				continue;
+		}
+		else if ((s8[i] & 0xF0) == 0xE0) {
+			// 3-byte sequence
+			if (i + 2 >= s8.size())
+				break;
+			c32 = (char32_t(s8[i] & 0x0F) << 12) |
+			      ((char32_t(s8[i + 1]) & 0x3F) << 6) |
+			      (char32_t(s8[i + 2]) & 0x3F);
+			size = 3;
+			// Ignore overlong sequence
+			if (c32 < 0x800)
+				continue;
+			// Validate surrogate pairs range
+			if (c32 >= 0xD800 && c32 <= 0xDFFF)
+				continue;
+		}
+		else if ((s8[i] & 0xF8) == 0xF0) {
+			// 4-byte sequence
+			if (i + 3 >= s8.size())
+				break;
+			c32 = (char32_t(s8[i] & 0x07) << 18) |
+			      ((char32_t(s8[i + 1]) & 0x3F) << 12) |
+			      ((char32_t(s8[i + 2]) & 0x3F) << 6) |
+			      (char32_t(s8[i + 3]) & 0x3F);
+			size = 4;
+
+			// Validate minimum value for 4-byte sequence
+			if (c32 < 0x10000)
+				continue;
+			// Validate maximum Unicode code point
+			if (c32 > 0x10FFFF)
+				continue;
+		}
+		else {
+			// Ignore invalid first byte
+			continue;
+		}
+
+		s32.push_back(c32);
+		i += size;
+	}
+
+	s32.shrink_to_fit();
+	return s32;
+}
+
+
+size_t UTF8NextCodepoint(const std::string& s8, size_t i) {
+	// Check out of bounds
+	if (i >= s8.size())
+		return s8.size();
+	// Check if null terminator
+	if (!s8[i]) return i;
+	// First byte signals size
+	// 0b0xxxxxxx
+	if ((s8[i] & 0x80) == 0x00) return std::min(i + 1, s8.size());
+	// Check for continuation byte 0b10xxxxxx
+	// if ((s8[1] & 0xc0) != 0x80) return 0;
+	// 0b110xxxxx
+	if ((s8[i] & 0xe0) == 0xc0) return std::min(i + 2, s8.size());
+	// if ((s8[2] & 0xc0) != 0x80) return 0;
+	// 0b1110xxxx
+	if ((s8[i] & 0xf0) == 0xe0) return std::min(i + 3, s8.size());
+	// if ((s8[3] & 0xc0) != 0x80) return 0;
+	// 0b11110xxx
+	if ((s8[i] & 0xf8) == 0xf0) return std::min(i + 4, s8.size());
+	// Invalid first UTF-8 byte
+	return i;
+}
+
+
+size_t UTF8PrevCodepoint(const std::string& s8, size_t i) {
+	if (i == 0) return 0;
+	// Check the previous 3 bytes
+	for (size_t j = 1; j <= 3; j++) {
+		i--;
+		if (i == 0) return 0;
+		// Check out of bounds
+		if (i >= s8.size())
+			return s8.size();
+		// Check for continuation byte 0b10xxxxxx
+		if ((s8[i] & 0xc0) != 0x80) return i;
+	}
+	return i;
+}
+
+
 #if defined ARCH_WIN
 std::string UTF16toUTF8(const std::wstring& w) {
 	if (w.empty())

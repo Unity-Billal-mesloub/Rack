@@ -88,6 +88,23 @@ std::vector<std::string> split(const std::string& s, const std::string& seperato
 std::string formatTime(const char* format, double timestamp);
 std::string formatTimeISO(double timestamp);
 
+// Unicode functions
+/** Converts a UTF-32 string to a UTF-8 string.
+Skips invalid UTF-32 codepoints (greater than 0x10FFFF).
+*/
+std::string UTF32toUTF8(const std::u32string& s32);
+/** Converts a UTF-8 string to a UTF-32 string.
+Skips invalid, overlong, and surrogate pair UTF-8 sequences.
+*/
+std::u32string UTF8toUTF32(const std::string& s8);
+/** Finds the byte index of the next codepoint in a valid UTF-8 string.
+i must be the start of a codepoint.
+*/
+size_t UTF8NextCodepoint(const std::string& s8, size_t i);
+/** Finds the byte index of the previous codepoint in a valid UTF-8 string.
+i must be the start of a codepoint.
+*/
+size_t UTF8PrevCodepoint(const std::string& s8, size_t i);
 
 #if defined ARCH_WIN
 /** Performs a Unicode string conversion from UTF-16 to UTF-8.

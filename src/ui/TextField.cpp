@@ -7,50 +7,6 @@ namespace rack {
 namespace ui {
 
 
-/** Calculates the number of bytes in a valid UTF-8 codepoint.
-Returns 0 if codepoint is invalid, but does not fully check validity.
-*/
-static size_t utf8CodepointSize(const char* s) {
-	// if (!s) return 0;
-	// Check if at end
-	if (!s[0]) return 0;
-	// First byte signals size
-	// 0b0xxxxxxx
-	if ((s[0] & 0x80) == 0x00) return 1;
-	// Check for continuation byte 0b10xxxxxx
-	// if ((s[1] & 0xc0) != 0x80) return 0;
-	// 0b110xxxxx
-	if ((s[0] & 0xe0) == 0xc0) return 2;
-	// if ((s[2] & 0xc0) != 0x80) return 0;
-	// 0b1110xxxx
-	if ((s[0] & 0xf0) == 0xe0) return 3;
-	// if ((s[3] & 0xc0) != 0x80) return 0;
-	// 0b11110xxx
-	if ((s[0] & 0xf8) == 0xf0) return 4;
-	// Invalid first UTF-8 byte
-	return 0;
-}
-
-
-/** Finds the byte index of the next codepoint in a valid UTF-8 string. */
-static size_t utf8Next(const char* s, size_t i) {
-	return i + utf8CodepointSize(&s[i]);
-}
-
-/** Finds the byte index of the previous codepoint in a valid UTF-8 string. */
-static size_t utf8Prev(const char* s, size_t i) {
-	if (i == 0) return 0;
-	// Check the previous 3 bytes
-	for (size_t j = 1; j <= 3; j++) {
-		i--;
-		if (i == 0) return 0;
-		// Check for continuation byte 0b10xxxxxx
-		if ((s[i] & 0xc0) != 0x80) return i;
-	}
-	return i;
-}
-
-
 struct TextFieldCopyItem : ui::MenuItem {
 	WeakPtr<TextField> textField;
 	void onAction(const ActionEvent& e) override {
@@ -154,12 +110,9 @@ void TextField::onButton(const ButtonEvent& e) {
 }
 
 void TextField::onSelectText(const SelectTextEvent& e) {
-	const char* bytes = (const char*) &e.codepoint;
-	size_t size = utf8CodepointSize(bytes);
-	if (size > 0) {
-		std::string newText(bytes, size);
-		insertText(newText);
-	}
+	std::u32string s32(1, char32_t(e.codepoint));
+	std::string s8 = string::UTF32toUTF8(s32);
+	insertText(s8);
 	e.consume(this);
 }
 
@@ -168,7 +121,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		// Backspace
 		if (e.isKeyCommand(GLFW_KEY_BACKSPACE)) {
 			if (cursor == selection) {
-				cursor = utf8Prev(text.c_str(), cursor);
+				cursor = string::UTF8PrevCodepoint(text, cursor);
 			}
 			insertText("");
 			e.consume(this);
@@ -184,7 +137,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		// Delete
 		if (e.isKeyCommand(GLFW_KEY_DELETE)) {
 			if (cursor == selection) {
-				cursor = utf8Next(text.c_str(), cursor);
+				cursor = string::UTF8NextCodepoint(text, cursor);
 			}
 			insertText("");
 			e.consume(this);
@@ -199,7 +152,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		}
 		// Left
 		if (e.isKeyCommand(GLFW_KEY_LEFT)) {
-			cursor = utf8Prev(text.c_str(), cursor);
+			cursor = string::UTF8PrevCodepoint(text, cursor);
 			selection = cursor;
 			e.consume(this);
 		}
@@ -209,7 +162,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_LEFT, GLFW_MOD_SHIFT)) {
-			cursor = utf8Prev(text.c_str(), cursor);
+			cursor = string::UTF8PrevCodepoint(text, cursor);
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
@@ -218,7 +171,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		}
 		// Right
 		if (e.isKeyCommand(GLFW_KEY_RIGHT)) {
-			cursor = utf8Next(text.c_str(), cursor);
+			cursor = string::UTF8NextCodepoint(text, cursor);
 			selection = cursor;
 			e.consume(this);
 		}
@@ -228,7 +181,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_RIGHT, GLFW_MOD_SHIFT)) {
-			cursor = utf8Next(text.c_str(), cursor);
+			cursor = string::UTF8NextCodepoint(text, cursor);
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {

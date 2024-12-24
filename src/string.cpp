@@ -322,7 +322,7 @@ std::u32string UTF8toUTF32(const std::string& s8) {
 			// Ignore overlong sequence
 			if (c32 < 0x800)
 				continue;
-			// Validate surrogate pairs range
+			// Ignore surrogate pairs
 			if (c32 >= 0xD800 && c32 <= 0xDFFF)
 				continue;
 		}
@@ -336,10 +336,10 @@ std::u32string UTF8toUTF32(const std::string& s8) {
 			      (char32_t(s8[i + 3]) & 0x3F);
 			size = 4;
 
-			// Validate minimum value for 4-byte sequence
+			// Ignore overlong sequence
 			if (c32 < 0x10000)
 				continue;
-			// Validate maximum Unicode code point
+			// Ignore codepoints beyond Unicode maximum
 			if (c32 > 0x10FFFF)
 				continue;
 		}
@@ -357,27 +357,32 @@ std::u32string UTF8toUTF32(const std::string& s8) {
 }
 
 
+static size_t UTF8CodepointSize(char c) {
+	if (!c) return 0;
+	// First byte signals size
+	// 0b0xxxxxxx
+	if ((c & 0x80) == 0x00) return 1;
+	// 0b110xxxxx
+	if ((c & 0xe0) == 0xc0) return 2;
+	// 0b1110xxxx
+	if ((c & 0xf0) == 0xe0) return 3;
+	// 0b11110xxx
+	if ((c & 0xf8) == 0xf0) return 4;
+	// Invalid first UTF-8 byte
+	return 0;
+}
+
+
 size_t UTF8NextCodepoint(const std::string& s8, size_t i) {
 	// Check out of bounds
 	if (i >= s8.size())
 		return s8.size();
-	// Check if null terminator
-	if (!s8[i]) return i;
-	// First byte signals size
-	// 0b0xxxxxxx
-	if ((s8[i] & 0x80) == 0x00) return std::min(i + 1, s8.size());
+	size_t size = UTF8CodepointSize(s8[i]);
 	// Check for continuation byte 0b10xxxxxx
 	// if ((s8[1] & 0xc0) != 0x80) return 0;
-	// 0b110xxxxx
-	if ((s8[i] & 0xe0) == 0xc0) return std::min(i + 2, s8.size());
 	// if ((s8[2] & 0xc0) != 0x80) return 0;
-	// 0b1110xxxx
-	if ((s8[i] & 0xf0) == 0xe0) return std::min(i + 3, s8.size());
 	// if ((s8[3] & 0xc0) != 0x80) return 0;
-	// 0b11110xxx
-	if ((s8[i] & 0xf8) == 0xf0) return std::min(i + 4, s8.size());
-	// Invalid first UTF-8 byte
-	return i;
+	return std::min(i + size, s8.size());
 }
 
 

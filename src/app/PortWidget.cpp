@@ -296,7 +296,7 @@ void PortWidget::createContextMenu() {
 	));
 
 	{
-		PortCloneCableItem* item = createMenuItem<PortCloneCableItem>(string::translate("PortWidget.cloneTopCable"), widget::getKeyCommandName(0, RACK_MOD_CTRL) + string::translate("key.drag"));
+		PortCloneCableItem* item = createMenuItem<PortCloneCableItem>(string::translate("PortWidget.cloneTopCable"), widget::getKeyCommandName(0, RACK_MOD_CTRL | RACK_MOD_SHIFT) + string::translate("key.drag"));
 		item->disabled = !topCw;
 		item->pw = this;
 		item->cw = topCw;

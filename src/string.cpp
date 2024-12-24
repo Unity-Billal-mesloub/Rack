@@ -77,19 +77,67 @@ std::string trim(const std::string& s) {
 }
 
 
-std::string ellipsize(const std::string& s, size_t len) {
-	if (s.size() <= len)
-		return s;
-	else
-		return s.substr(0, len - 3) + "...";
+std::string truncate(const std::string& s, size_t maxCodepoints) {
+	if (s.empty() || maxCodepoints == 0)
+		return "";
+
+	size_t pos = 0;
+	for (size_t i = 0; i < maxCodepoints; i++) {
+		// If remaining bytes are less than remaining codepoints, the string can't possibly be truncated.
+		if (s.size() - pos <= maxCodepoints - i)
+			return s;
+
+		pos = UTF8NextCodepoint(s, pos);
+		// Check if at end
+		if (pos >= s.size())
+			return s;
+	}
+
+	return s.substr(0, pos);
 }
 
 
-std::string ellipsizePrefix(const std::string& s, size_t len) {
-	if (s.size() <= len)
+std::string truncatePrefix(const std::string& s, size_t maxCodepoints) {
+	if (s.empty() || maxCodepoints == 0)
+		return "";
+
+	size_t pos = s.size();
+	for (size_t i = 0; i < maxCodepoints; i++) {
+		// If remaining bytes are less than remaining codepoints, the string can't possibly be truncated.
+		if (pos <= maxCodepoints - i)
+			return s;
+
+		pos = UTF8PrevCodepoint(s, pos);
+		// Check if at beginning
+		if (pos == 0)
+			return s;
+	}
+
+	return s.substr(pos);
+}
+
+
+std::string ellipsize(const std::string& s, size_t maxCodepoints) {
+	if (maxCodepoints == 0)
+		return "";
+	std::string s2 = truncate(s, maxCodepoints);
+	if (s2 == s)
 		return s;
-	else
-		return "..." + s.substr(s.size() - (len - 3));
+	// If string was truncated, back up a codepoint and add a Unicode ellipses character
+	size_t pos = UTF8PrevCodepoint(s2, s2.size());
+	return s2.substr(0, pos) + "…";
+}
+
+
+std::string ellipsizePrefix(const std::string& s, size_t maxCodepoints) {
+	if (maxCodepoints == 0)
+		return "";
+	std::string s2 = truncatePrefix(s, maxCodepoints);
+	if (s2 == s)
+		return s;
+	// If string was truncated, move forward a codepoint and prepend a Unicode ellipses character
+	size_t pos = UTF8NextCodepoint(s2, 0);
+	return "…" + s2.substr(pos);
 }
 
 
@@ -386,19 +434,25 @@ size_t UTF8NextCodepoint(const std::string& s8, size_t i) {
 }
 
 
-size_t UTF8PrevCodepoint(const std::string& s8, size_t i) {
-	if (i == 0) return 0;
-	// Check the previous 3 bytes
-	for (size_t j = 1; j <= 3; j++) {
-		i--;
-		if (i == 0) return 0;
-		// Check out of bounds
-		if (i >= s8.size())
-			return s8.size();
+/** Finds the byte index of the front of a codepoint by reversing until a non-continuation byte is found. */
+static size_t UTF8StartCodepoint(const std::string& s8, size_t i) {
+	// Check out of bounds
+	if (i >= s8.size())
+		return s8.size();
+	while (i > 0) {
 		// Check for continuation byte 0b10xxxxxx
-		if ((s8[i] & 0xc0) != 0x80) return i;
+		if ((s8[i] & 0xc0) != 0x80)
+			break;
+		i--;
 	}
 	return i;
+}
+
+
+size_t UTF8PrevCodepoint(const std::string& s8, size_t i) {
+	if (i == 0)
+		return 0;
+	return UTF8StartCodepoint(s8, i - 1);
 }
 
 

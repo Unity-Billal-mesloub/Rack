@@ -33,10 +33,14 @@ std::string lowercase(const std::string& s);
 std::string uppercase(const std::string& s);
 /** Removes whitespace from beginning and end of string. */
 std::string trim(const std::string& s);
-/** Truncates and adds "..." to the end of a string, not exceeding `len` characters. */
-std::string ellipsize(const std::string& s, size_t len);
-/** Truncates and adds "..." to the beginning of a string, not exceeding `len` characters. */
-std::string ellipsizePrefix(const std::string& s, size_t len);
+/** Truncates a string to not exceed a number of UTF-8 codepoints. */
+std::string truncate(const std::string& s, size_t maxCodepoints);
+/** Truncates the beginning of a string to not exceed a number of UTF-8 codepoints. */
+std::string truncatePrefix(const std::string& s, size_t maxCodepoints);
+/** Truncates and adds "…" to the end of a string, to not exceed a number of UTF-8 codepoints. */
+std::string ellipsize(const std::string& s, size_t maxCodepoints);
+/** Truncates and adds "…" to the beginning of a string, to not exceed a number of UTF-8 codepoints. */
+std::string ellipsizePrefix(const std::string& s, size_t maxCodepoints);
 /** Returns whether a string starts with the given substring. */
 bool startsWith(const std::string& str, const std::string& prefix);
 /** Returns whether a string ends with the given substring. */

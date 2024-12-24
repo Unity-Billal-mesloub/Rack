@@ -438,7 +438,7 @@ struct SortButton : ui::ChoiceButton {
 	void step() override {
 		text = string::translate("Browser.sort");
 		text += getSortNames()[settings::browserSort];
-		text = string::ellipsize(text, 23);
+		text = string::ellipsize(text, 20);
 		ChoiceButton::step();
 	}
 };
@@ -931,7 +931,7 @@ inline void BrandButton::step() {
 		text += ": ";
 		text += browser->brand;
 	}
-	text = string::ellipsize(text, 23);
+	text = string::ellipsize(text, 20);
 	ChoiceButton::step();
 }
 
@@ -1017,7 +1017,7 @@ inline void TagButton::step() {
 			firstTag = false;
 		}
 	}
-	text = string::ellipsize(text, 23);
+	text = string::ellipsize(text, 20);
 	ChoiceButton::step();
 }
 

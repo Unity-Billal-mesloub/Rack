@@ -180,6 +180,7 @@
 	"ModuleWidget.savePresetFailed": "Could not save preset to file %s",
 	"ModuleWidget.overwriteTemplate": "Overwrite default preset for %s?",
 	"ModuleWidget.clearTemplate": "Clear default",
+	"ModuleWidget.clearTemplateDialog": "Delete default preset for %s?",
 	"ModuleWidget.history.resetModule": "reset module",
 	"ModuleWidget.history.randomizeModule": "randomize module",
 	"ModuleWidget.history.disconnectCables": "Disconnect cables",

@@ -711,7 +711,7 @@ void ModuleWidget::clearTemplate() {
 }
 
 void ModuleWidget::clearTemplateDialog() {
-	std::string message = string::f(string::translate("ModuleWidget.clearTemplate"), model->getFullName());
+	std::string message = string::f(string::translate("ModuleWidget.clearTemplateDialog"), model->getFullName());
 	if (!osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, message.c_str()))
 		return;
 	clearTemplate();

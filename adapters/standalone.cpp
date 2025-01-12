@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 	// Handle will be closed by Windows when the process ends
 	HANDLE instanceMutex = CreateMutexW(NULL, true, string::UTF8toUTF16(APP_NAME).c_str());
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		osdialog_message(OSDIALOG_ERROR, OSDIALOG_OK, string::translate("standalone.multipleInstances").c_str());
+		osdialog_message(OSDIALOG_ERROR, OSDIALOG_OK, "VCV Rack is already running. Multiple Rack instances are not supported.");
 		exit(1);
 	}
 	(void) instanceMutex;

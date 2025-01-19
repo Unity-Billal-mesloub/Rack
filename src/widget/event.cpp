@@ -74,10 +74,11 @@ std::string getKeyCommandName(int key, int mods) {
 
 
 bool Widget::KeyBaseEvent::isKeyCommand(int key, int mods) const {
+	// DEBUG("this key '%c' %d keyName \"%s\" mods 0x%02x | checked key '%c' %d mods 0x%02x", this->key, this->key, this->keyName.c_str(), this->mods, key, key, mods);
 	// Reject if mods don't match
 	if ((this->mods & RACK_MOD_MASK) != mods)
 		return false;
-	// Reject invalid keys
+	// Reject control characters. GLFW shouldn't generate these anyway.
 	if (this->key < 32)
 		return false;
 	// Are both keys printable?
@@ -91,7 +92,7 @@ bool Widget::KeyBaseEvent::isKeyCommand(int key, int mods) const {
 			return k == key;
 		}
 	}
-	// Check equal QWERTY keys, printable or not
+	// Check equal GLFW key ID, printable or not
 	return this->key == key;
 }
 

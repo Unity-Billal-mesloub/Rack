@@ -170,7 +170,7 @@ void Scene::onDragHover(const DragHoverEvent& e) {
 void Scene::onHoverKey(const HoverKeyEvent& e) {
 	// Key commands that override children
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
-		// DEBUG("key %d '%c' scancode %d keyName '%s'", e.key, e.key, e.scancode, e.keyName.c_str());
+		// DEBUG("key %d '%c' scancode %d keyName '%s' mods %02x", e.key, e.key, e.scancode, e.keyName.c_str(), e.mods);
 		if (e.isKeyCommand(GLFW_KEY_N, RACK_MOD_CTRL)) {
 			APP->patch->loadTemplateDialog();
 			e.consume(this);
@@ -211,8 +211,13 @@ void Scene::onHoverKey(const HoverKeyEvent& e) {
 			APP->scene->rackScroll->setZoom(std::pow(2.f, zoom));
 			e.consume(this);
 		}
-		// Numpad has a "+" key, but the main keyboard section hides it under "="
-		if (e.isKeyCommand(GLFW_KEY_EQUAL, RACK_MOD_CTRL) || e.isKeyCommand(GLFW_KEY_KP_ADD, RACK_MOD_CTRL)) {
+		if (e.isKeyCommand(GLFW_KEY_EQUAL, RACK_MOD_CTRL)
+			// The user might hold shift to access the + character
+			|| e.isKeyCommand(GLFW_KEY_EQUAL, RACK_MOD_CTRL | GLFW_MOD_SHIFT)
+			// Numpad + key
+			|| e.isKeyCommand(GLFW_KEY_KP_ADD, RACK_MOD_CTRL)
+			// Some layouts (e.g. QWERTZ) have a + key, but GLFW doesn't have a macro for it
+			|| e.isKeyCommand('+', RACK_MOD_CTRL)) {
 			float zoom = std::log2(APP->scene->rackScroll->getZoom());
 			zoom *= 2;
 			zoom = std::floor(zoom + 0.01f) + 1;

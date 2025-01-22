@@ -87,8 +87,9 @@ ifdef ARCH_MAC
 else
 	cp -r --parents $(DISTRIBUTABLES) dist/$(SLUG)/
 endif
-	@# Create ZIP package
-	cd dist && tar -c $(SLUG) | zstd -$(ZSTD_COMPRESSION_LEVEL) -o "$(SLUG)"-"$(VERSION)"-$(ARCH_NAME).vcvplugin
+	@# Archive plugin dir with Zstandard + tar
+	@# Don't store extended attributes with --no-xattrs
+	cd dist && tar --no-xattrs -c $(SLUG) | zstd -$(ZSTD_COMPRESSION_LEVEL) -o "$(SLUG)"-"$(VERSION)"-$(ARCH_NAME).vcvplugin
 
 install: dist
 	mkdir -p "$(PLUGINS_DIR)"

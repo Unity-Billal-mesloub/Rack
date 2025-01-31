@@ -266,8 +266,8 @@ struct Audio : Module {
 				if (inputs[AUDIO_INPUTS + i].isConnected())
 					v = inputs[AUDIO_INPUTS + i].getVoltageSum() / 10.f;
 				// Normal right input to left on Audio-2
-				else if (i == 1 && NUM_AUDIO_INPUTS == 2)
-					v = inputFrame.samples[0];
+				else if (NUM_AUDIO_INPUTS == 2 && i == 1)
+					v = inputs[AUDIO_INPUTS + 0].getVoltageSum() / 10.f;
 
 				// Apply DC filter
 				if (dcFilterEnabled) {
@@ -280,6 +280,7 @@ struct Audio : Module {
 					if (std::fabs(v) >= 1.f)
 						inputClipTimers[i / 2] = clipTime;
 				}
+
 				inputFrame.samples[i] = v;
 			}
 

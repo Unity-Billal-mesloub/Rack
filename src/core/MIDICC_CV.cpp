@@ -62,7 +62,7 @@ struct MIDICC_CV : Module {
 		}
 		learningId = -1;
 		for (int id = 0; id < 16; id++) {
-			learnedCcs[id] = id;
+			learnedCcs[id] = id + 1;
 		}
 		midiInput.reset();
 		smooth = true;

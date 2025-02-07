@@ -63,6 +63,9 @@ include $(RACK_DIR)/compile.mk
 clean:
 	rm -rfv build $(TARGET) dist
 
+cleandist:
+	rm -rfv dist
+
 ZSTD_COMPRESSION_LEVEL ?= 19
 
 dist: all

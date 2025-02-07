@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<installer-gui-script minSpecVersion="1">
+<installer-gui-script minSpecVersion="2">
 	<title>VCV Rack 2 Free</title>
+	<pkg-ref id="com.vcvrack.rack"/>
 
 	<allowed-os-versions>
 		<os-version min="10.9"/>
 	</allowed-os-versions>
 
 	<options require-scripts="false" customize="never" hostArchitectures="x86_64,arm64"/>
+	<domains enable_localSystem="true" enable_currentUserHome="true"/>
+
 	<choices-outline>
 		<line choice="com.vcvrack.rack"/>
 	</choices-outline>
@@ -14,7 +17,6 @@
 	<choice id="com.vcvrack.rack" title="Standalone" enabled="false">
 		<pkg-ref id="com.vcvrack.rack"/>
 	</choice>
-	<pkg-ref id="com.vcvrack.rack" version="0" onConclusion="none">Component.pkg</pkg-ref>
 
-	<pkg-ref id="com.vcvrack.rack"/>
+	<pkg-ref id="com.vcvrack.rack" version="0" onConclusion="none">Component.pkg</pkg-ref>
 </installer-gui-script>

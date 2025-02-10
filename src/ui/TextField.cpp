@@ -71,7 +71,9 @@ void TextField::draw(const DrawArgs& args) {
 
 	std::string drawText;
 	if (password) {
-		drawText = std::string(text.size(), '*');
+		drawText = std::string(string::UTF8Length(text), '*');
+		begin = string::UTF8CodepointIndex(text, begin);
+		end = string::UTF8CodepointIndex(text, end);
 	}
 	else {
 		drawText = text;

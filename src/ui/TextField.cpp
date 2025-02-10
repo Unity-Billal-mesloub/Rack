@@ -343,6 +343,10 @@ void TextField::pasteClipboard() {
 }
 
 void TextField::cursorToPrevWord() {
+	if (password) {
+		cursor = 0;
+		return;
+	}
 	// This works for valid UTF-8 text
 	size_t pos = text.rfind(' ', std::max(cursor - 2, 0));
 	if (pos == std::string::npos)
@@ -352,6 +356,10 @@ void TextField::cursorToPrevWord() {
 }
 
 void TextField::cursorToNextWord() {
+	if (password) {
+		cursor = text.size();
+		return;
+	}
 	// This works for valid UTF-8 text
 	size_t pos = text.find(' ', std::min(cursor + 1, (int) text.size()));
 	if (pos == std::string::npos)

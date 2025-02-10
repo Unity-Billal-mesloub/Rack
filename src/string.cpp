@@ -421,38 +421,74 @@ static size_t UTF8CodepointSize(char c) {
 }
 
 
-size_t UTF8NextCodepoint(const std::string& s8, size_t i) {
+size_t UTF8NextCodepoint(const std::string& s8, size_t pos) {
 	// Check out of bounds
-	if (i >= s8.size())
+	if (pos >= s8.size())
 		return s8.size();
-	size_t size = UTF8CodepointSize(s8[i]);
+	size_t size = UTF8CodepointSize(s8[pos]);
 	// Check for continuation byte 0b10xxxxxx
 	// if ((s8[1] & 0xc0) != 0x80) return 0;
 	// if ((s8[2] & 0xc0) != 0x80) return 0;
 	// if ((s8[3] & 0xc0) != 0x80) return 0;
-	return std::min(i + size, s8.size());
+	return std::min(pos + size, s8.size());
 }
 
 
 /** Finds the byte index of the front of a codepoint by reversing until a non-continuation byte is found. */
-static size_t UTF8StartCodepoint(const std::string& s8, size_t i) {
+static size_t UTF8StartCodepoint(const std::string& s8, size_t pos) {
 	// Check out of bounds
-	if (i >= s8.size())
+	if (pos >= s8.size())
 		return s8.size();
-	while (i > 0) {
+	while (pos > 0) {
 		// Check for continuation byte 0b10xxxxxx
-		if ((s8[i] & 0xc0) != 0x80)
+		if ((s8[pos] & 0xc0) != 0x80)
 			break;
-		i--;
+		pos--;
 	}
-	return i;
+	return pos;
 }
 
 
-size_t UTF8PrevCodepoint(const std::string& s8, size_t i) {
-	if (i == 0)
+size_t UTF8PrevCodepoint(const std::string& s8, size_t pos) {
+	if (pos == 0)
 		return 0;
-	return UTF8StartCodepoint(s8, i - 1);
+	return UTF8StartCodepoint(s8, pos - 1);
+}
+
+
+size_t UTF8Length(const std::string& s8) {
+	return UTF8CodepointIndex(s8, s8.size());
+}
+
+
+size_t UTF8CodepointIndex(const std::string& s8, size_t endPos) {
+	size_t pos = 0;
+	size_t index = 0;
+	endPos = std::min(endPos, s8.size());
+	while (pos < endPos) {
+		size_t newPos = UTF8NextCodepoint(s8, pos);
+		// Check if codepoint is invalid
+		if (pos == newPos)
+			return index;
+		pos = newPos;
+		index++;
+	}
+	return index;
+}
+
+
+size_t UTF8CodepointPos(const std::string& s8, size_t endIndex) {
+	size_t pos = 0;
+	size_t index = 0;
+	while (index < endIndex && pos < s8.size()) {
+		size_t newPos = UTF8NextCodepoint(s8, pos);
+		// Check if codepoint is invalid
+		if (pos == newPos)
+			return pos;
+		pos = newPos;
+		index++;
+	}
+	return pos;
 }
 
 

@@ -16,6 +16,7 @@ The wrapper template function below automatically converts all arguments (includ
 __attribute__((format(printf, 1, 2)))
 std::string f(const char* format, ...);
 std::string fV(const char* format, va_list args);
+
 // Converts std::string arguments of f() to `const char*`
 template<typename T>
 T convertFArg(const T& t) {return t;}
@@ -101,14 +102,30 @@ std::string UTF32toUTF8(const std::u32string& s32);
 Skips invalid, overlong, and surrogate pair UTF-8 sequences.
 */
 std::u32string UTF8toUTF32(const std::string& s8);
-/** Finds the byte index of the next codepoint in a valid UTF-8 string.
-i must be the start of a codepoint.
+/** Finds the byte position of the next codepoint in a valid UTF-8 string.
+pos is the byte position of the start of a codepoint.
+Returns s8.size() if given codepoint is the last.
 */
-size_t UTF8NextCodepoint(const std::string& s8, size_t i);
-/** Finds the byte index of the previous codepoint in a valid UTF-8 string.
-i must be the start of a codepoint.
+size_t UTF8NextCodepoint(const std::string& s8, size_t pos);
+/** Finds the byte position of the previous codepoint in a valid UTF-8 string.
+pos is the byte position of the start of a codepoint.
+Returns 0 if given codepoint is the first.
 */
-size_t UTF8PrevCodepoint(const std::string& s8, size_t i);
+size_t UTF8PrevCodepoint(const std::string& s8, size_t pos);
+/** Returns the number of codepoints in a valid UTF-8 string.
+O(len) time
+*/
+size_t UTF8Length(const std::string& s8);
+/** Returns a codepoint's index in a valid UTF-8 string.
+pos is the byte position of the start of a codepoint.
+O(pos) time
+*/
+size_t UTF8CodepointIndex(const std::string& s8, size_t pos);
+/** Returns a codepoint's byte position in a valid UTF-8 string.
+Returns s8.size() if index is beyond the last codepoint.
+O(index) time
+*/
+size_t UTF8CodepointPos(const std::string& s8, size_t index);
 
 #if defined ARCH_WIN
 /** Performs a Unicode string conversion from UTF-16 to UTF-8.

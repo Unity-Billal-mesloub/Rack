@@ -119,6 +119,12 @@ void TextField::onSelectText(const SelectTextEvent& e) {
 }
 
 void TextField::onSelectKey(const SelectKeyEvent& e) {
+#if defined ARCH_MAC
+	#define TEXTFIELD_MOD_CTRL RACK_MOD_ALT
+#else
+	#define TEXTFIELD_MOD_CTRL RACK_MOD_CTRL
+#endif
+
 	if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
 		// Backspace
 		if (e.isKeyCommand(GLFW_KEY_BACKSPACE)) {
@@ -129,7 +135,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Ctrl+Backspace
-		if (e.isKeyCommand(GLFW_KEY_BACKSPACE, RACK_MOD_CTRL)) {
+		if (e.isKeyCommand(GLFW_KEY_BACKSPACE, TEXTFIELD_MOD_CTRL)) {
 			if (cursor == selection) {
 				cursorToPrevWord();
 			}
@@ -145,7 +151,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Ctrl+Delete
-		if (e.isKeyCommand(GLFW_KEY_DELETE, RACK_MOD_CTRL)) {
+		if (e.isKeyCommand(GLFW_KEY_DELETE, TEXTFIELD_MOD_CTRL)) {
 			if (cursor == selection) {
 				cursorToNextWord();
 			}
@@ -158,7 +164,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			selection = cursor;
 			e.consume(this);
 		}
-		if (e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL)) {
+		if (e.isKeyCommand(GLFW_KEY_LEFT, TEXTFIELD_MOD_CTRL)) {
 			cursorToPrevWord();
 			selection = cursor;
 			e.consume(this);
@@ -167,7 +173,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			cursor = string::UTF8PrevCodepoint(text, cursor);
 			e.consume(this);
 		}
-		if (e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_LEFT, TEXTFIELD_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			cursorToPrevWord();
 			e.consume(this);
 		}
@@ -177,7 +183,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			selection = cursor;
 			e.consume(this);
 		}
-		if (e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL)) {
+		if (e.isKeyCommand(GLFW_KEY_RIGHT, TEXTFIELD_MOD_CTRL)) {
 			cursorToNextWord();
 			selection = cursor;
 			e.consume(this);
@@ -186,7 +192,7 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			cursor = string::UTF8NextCodepoint(text, cursor);
 			e.consume(this);
 		}
-		if (e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_RIGHT, TEXTFIELD_MOD_CTRL | GLFW_MOD_SHIFT)) {
 			cursorToNextWord();
 			e.consume(this);
 		}
@@ -199,22 +205,38 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 			e.consume(this);
 		}
 		// Home
-		if (e.isKeyCommand(GLFW_KEY_HOME)) {
+		if (e.isKeyCommand(GLFW_KEY_HOME)
+#if defined ARCH_MAC
+			|| e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL)
+#endif
+		) {
 			selection = cursor = 0;
 			e.consume(this);
 		}
 		// Shift+Home
-		if (e.isKeyCommand(GLFW_KEY_HOME, GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_HOME, GLFW_MOD_SHIFT)
+#if defined ARCH_MAC
+			|| e.isKeyCommand(GLFW_KEY_LEFT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)
+#endif
+		) {
 			cursor = 0;
 			e.consume(this);
 		}
 		// End
-		if (e.isKeyCommand(GLFW_KEY_END)) {
+		if (e.isKeyCommand(GLFW_KEY_END)
+#if defined ARCH_MAC
+			|| e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL)
+#endif
+		) {
 			selection = cursor = text.size();
 			e.consume(this);
 		}
 		// Shift+End
-		if (e.isKeyCommand(GLFW_KEY_END, GLFW_MOD_SHIFT)) {
+		if (e.isKeyCommand(GLFW_KEY_END, GLFW_MOD_SHIFT)
+#if defined ARCH_MAC
+			|| e.isKeyCommand(GLFW_KEY_RIGHT, RACK_MOD_CTRL | GLFW_MOD_SHIFT)
+#endif
+		) {
 			cursor = text.size();
 			e.consume(this);
 		}

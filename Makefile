@@ -260,7 +260,7 @@ ifdef ARCH_MAC
 	# Make standalone PKG
 	mkdir -p dist/Component
 	cp -R dist/"$(DIST_BUNDLE)" dist/Component/
-	pkgbuild --identifier com.vcvrack.rack --component-plist Component.plist --root dist/Component --install-location /Applications dist/Component.pkg
+	pkgbuild --identifier com.vcvrack.rack2 --component-plist Component.plist --root dist/Component --install-location /Applications dist/Component.pkg
 	# Make PKG
 	productbuild --distribution Distribution.xml --package-path dist dist/$(DIST_NAME).pkg
 	productsign --sign "Developer ID Installer: Andrew Belt (V8SW9J626X)" dist/$(DIST_NAME).pkg dist/$(DIST_NAME)-signed.pkg

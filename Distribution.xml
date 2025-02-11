@@ -10,11 +10,11 @@
 	<domains enable_localSystem="true" enable_currentUserHome="true"/>
 
 	<choices-outline>
-		<line choice="com.vcvrack.rack"/>
+		<line choice="com.vcvrack.rack2"/>
 	</choices-outline>
 
-	<choice id="com.vcvrack.rack" title="Standalone" enabled="false">
-		<pkg-ref id="com.vcvrack.rack"/>
+	<choice id="com.vcvrack.rack2" title="Standalone" enabled="false">
+		<pkg-ref id="com.vcvrack.rack2"/>
 	</choice>
-	<pkg-ref id="com.vcvrack.rack" version="0" onConclusion="none">Component.pkg</pkg-ref>
+	<pkg-ref id="com.vcvrack.rack2" version="0" onConclusion="none">Component.pkg</pkg-ref>
 </installer-gui-script>

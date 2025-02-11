@@ -1,7 +1,7 @@
 RACK_DIR ?= .
 EDITION := Free
 VERSION_MAJOR := 2
-VERSION := $(VERSION_MAJOR).6.$(shell git rev-parse --short HEAD)
+VERSION := $(patsubst v%,%,$(shell git describe --tags --match "v$(VERSION_MAJOR).*"))
 
 FLAGS += -Iinclude -Idep/include
 

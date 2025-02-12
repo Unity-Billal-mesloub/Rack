@@ -164,9 +164,11 @@
 	"MenuBar.library.browse": "Browse VCV Library",
 	"MenuBar.library.updates": "Updates",
 	"MenuBar.library.restart": "All plugins have been downloaded. Close and re-launch Rack to load new updates.",
+	"MenuBar.library.restartDaw": "All plugins have been downloaded. Restart your DAW to load new updates.",
 	"MenuBar.help": "Help",
 	"MenuBar.help.language": "Language",
 	"MenuBar.help.language.restart": "Rack must be restarted to change display language to %s. Restart Rack now?",
+	"MenuBar.help.language.restartDaw": "Rack must be restarted to change display language to %s. Restart your DAW to load translation.",
 	"MenuBar.help.tips": "Tips",
 	"MenuBar.help.manual": "User manual",
 	"MenuBar.help.support": "Support",
@@ -361,5 +363,10 @@
 	"TipWindow.close": "Close",
 	"PortInfo.input": "%s input",
 	"PortInfo.output": "%s output",
-	"ModuleLightWidget.light": "%s light"
+	"ModuleLightWidget.light": "%s light",
+	"TipWindow.connect": "Connect your VCV account to begin using VCV Rack.",
+	"TipWindow.email": "Email",
+	"TipWindow.password": "Password",
+	"TipWindow.logIn": "Log in",
+	"TipWindow.offlineActivation": "Offline activation instructions at vcvrack.com/account. Machine ID: %s"
 }

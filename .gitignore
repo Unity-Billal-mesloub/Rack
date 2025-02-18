@@ -1,4 +1,8 @@
-.DS_Store
+# Ignore all dotfiles except git dotfiles
+.*
+!.git*
+
+# Binaries and build targets
 *.a
 *.so
 *.dylib
@@ -7,13 +11,14 @@
 *.res
 *.d
 *.dSYM
-
+/build
 /Rack
 /dep
+/dist
+
+# Rack folders
 /plugins
 /disabledplugins
-/build
-/dist
 /patches
 /presets
 /licenses

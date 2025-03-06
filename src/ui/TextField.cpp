@@ -325,6 +325,9 @@ std::string TextField::getSelectedText() {
 }
 
 void TextField::insertText(std::string text) {
+	// Rack uses UNIX newlines so remove all CR characters
+	text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+
 	bool changed = false;
 	if (cursor != selection) {
 		// Delete selected text

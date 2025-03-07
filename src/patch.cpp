@@ -116,6 +116,13 @@ void Manager::save(std::string path) {
 	INFO("Saving patch %s", path.c_str());
 	// Dispatch SaveEvent to modules
 	APP->engine->prepareSave();
+
+	// Omit the patch path from the patch archive, so sharing their patch doesn't leak the user's home dir name, which is their OS username.
+	// Then restore it so it is saved to <Rack user dir>/autosave/patch.json on the next autosave.
+	std::string lastPath = this->path;
+	this->path = "";
+	DEFER({this->path = lastPath;});
+
 	// Save patch.json
 	saveAutosave();
 	// Clean up autosave directory (e.g. removed modules)
@@ -507,8 +514,6 @@ void Manager::fromJson(json_t* rootJ) {
 	json_t* pathJ = json_object_get(rootJ, "path");
 	if (pathJ)
 		path = json_string_value(pathJ);
-	else
-		path = "";
 
 	// unsaved
 	json_t* unsavedJ = json_object_get(rootJ, "unsaved");

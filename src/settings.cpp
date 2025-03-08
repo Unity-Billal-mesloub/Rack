@@ -55,6 +55,8 @@ bool preferDarkPanels = false;
 #endif
 float autosaveInterval = 15.0;
 bool skipLoadOnLaunch = false;
+std::string lastPatchDirectory;
+std::string lastSelectionDirectory;
 std::list<std::string> recentPatchPaths;
 bool cableAutoRotate = true;
 std::vector<NVGcolor> cableColors;
@@ -189,6 +191,10 @@ json_t* toJson() {
 
 	if (skipLoadOnLaunch)
 		json_object_set_new(rootJ, "skipLoadOnLaunch", json_boolean(true));
+
+	json_object_set_new(rootJ, "lastPatchDirectory", json_stringn(lastPatchDirectory.c_str(), lastPatchDirectory.size()));
+
+	json_object_set_new(rootJ, "lastSelectionDirectory", json_stringn(lastSelectionDirectory.c_str(), lastSelectionDirectory.size()));
 
 	json_t* recentPatchPathsJ = json_array();
 	for (const std::string& path : recentPatchPaths) {
@@ -420,6 +426,14 @@ void fromJson(json_t* rootJ) {
 	json_t* skipLoadOnLaunchJ = json_object_get(rootJ, "skipLoadOnLaunch");
 	if (skipLoadOnLaunchJ)
 		skipLoadOnLaunch = json_boolean_value(skipLoadOnLaunchJ);
+
+	json_t* lastPatchDirectoryJ = json_object_get(rootJ, "lastPatchDirectory");
+	if (lastPatchDirectoryJ)
+		lastPatchDirectory = json_string_value(lastPatchDirectoryJ);
+
+	json_t* lastSelectionDirectoryJ = json_object_get(rootJ, "lastSelectionDirectory");
+	if (lastSelectionDirectoryJ)
+		lastSelectionDirectory = json_string_value(lastSelectionDirectoryJ);
 
 	recentPatchPaths.clear();
 	json_t* recentPatchPathsJ = json_object_get(rootJ, "recentPatchPaths");

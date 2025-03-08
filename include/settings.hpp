@@ -81,6 +81,8 @@ extern float frameRateLimit;
 /** Interval between autosaves in seconds. */
 extern float autosaveInterval;
 extern bool skipLoadOnLaunch;
+extern std::string lastPatchDirectory;
+extern std::string lastSelectionDirectory;
 extern std::list<std::string> recentPatchPaths;
 extern std::vector<NVGcolor> cableColors;
 extern std::vector<std::string> cableLabels;

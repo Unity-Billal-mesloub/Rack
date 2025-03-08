@@ -167,12 +167,18 @@ void Manager::saveAsDialog(bool setPath) {
 		filename = system::getFilename(this->path);
 	}
 
-	// Default to <Rack user dir>/patches
+	// Use fallback lastPatchDirectory
 	if (dir == "" || !system::isDirectory(dir)) {
-		dir = asset::user("patches");
-		system::createDirectories(dir);
+		dir = settings::lastPatchDirectory;
+
+		// Use fallback <Rack user dir>/patches
+		if (dir == "" || !system::isDirectory(dir)) {
+			dir = asset::user("patches");
+			system::createDirectory(dir);
+		}
 	}
 
+	// Use fallback filename
 	if (filename == "") {
 		filename = "Untitled.vcv";
 	}
@@ -185,17 +191,12 @@ void Manager::saveAsDialog(bool setPath) {
 		// Cancel silently
 		return;
 	}
-	DEFER({std::free(pathC);});
+	std::string path = pathC;
+	std::free(pathC);
 
 	// Automatically append .vcv extension
-	std::string path = pathC;
 	if (system::getExtension(path) != ".vcv") {
 		path += ".vcv";
-	}
-
-	APP->history->setSaved();
-	if (setPath) {
-		this->path = path;
 	}
 
 	try {
@@ -207,7 +208,13 @@ void Manager::saveAsDialog(bool setPath) {
 		return;
 	}
 
-	pushRecentPath(path);
+	// Commit patch path
+	APP->history->setSaved();
+	if (setPath) {
+		this->path = path;
+		settings::lastPatchDirectory = system::getDirectory(path);
+		pushRecentPath(path);
+	}
 }
 
 
@@ -400,10 +407,15 @@ void Manager::loadDialog() {
 		dir = system::getDirectory(this->path);
 	}
 
-	// Default to <Rack user dir>/patches
+	// Use fallback lastPatchDirectory
 	if (dir == "" || !system::isDirectory(dir)) {
-		dir = asset::user("patches");
-		system::createDirectory(dir);
+		dir = settings::lastPatchDirectory;
+
+		// Use fallback <Rack user dir>/patches
+		if (dir == "" || !system::isDirectory(dir)) {
+			dir = asset::user("patches");
+			system::createDirectory(dir);
+		}
 	}
 
 	osdialog_filters* filters = osdialog_filters_parse(PATCH_FILTERS);
@@ -411,7 +423,7 @@ void Manager::loadDialog() {
 
 	char* pathC = osdialog_file(OSDIALOG_OPEN, dir.c_str(), NULL, filters);
 	if (!pathC) {
-		// Fail silently
+		// Cancel silently
 		return;
 	}
 	std::string path = pathC;

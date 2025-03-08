@@ -1094,25 +1094,33 @@ void RackWidget::loadSelection(std::string path) {
 }
 
 void RackWidget::loadSelectionDialog() {
-	std::string selectionDir = asset::user("selections");
-	system::createDirectories(selectionDir);
+	std::string dir = settings::lastSelectionDirectory;
+
+	// Use fallback <Rack user dir>/selections
+	if (dir == "" || !system::isDirectory(dir)) {
+		dir = asset::user("selections");
+		system::createDirectory(dir);
+	}
 
 	osdialog_filters* filters = osdialog_filters_parse(SELECTION_FILTERS);
 	DEFER({osdialog_filters_free(filters);});
 
-	char* pathC = osdialog_file(OSDIALOG_OPEN, selectionDir.c_str(), NULL, filters);
+	char* pathC = osdialog_file(OSDIALOG_OPEN, dir.c_str(), NULL, filters);
 	if (!pathC) {
-		// No path selected
+		// Cancel silently
 		return;
 	}
-	DEFER({std::free(pathC);});
+	std::string path = pathC;
+	std::free(pathC);
 
 	try {
-		loadSelection(pathC);
+		loadSelection(path);
 	}
 	catch (Exception& e) {
 		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, e.what());
 	}
+
+	settings::lastSelectionDirectory = system::getDirectory(path);
 }
 
 void RackWidget::saveSelection(std::string path) {
@@ -1136,25 +1144,32 @@ void RackWidget::saveSelection(std::string path) {
 }
 
 void RackWidget::saveSelectionDialog() {
-	std::string selectionDir = asset::user("selections");
-	system::createDirectories(selectionDir);
+	std::string dir = settings::lastSelectionDirectory;
+
+	// Use fallback <Rack user dir>/selections
+	if (dir == "" || !system::isDirectory(dir)) {
+		dir = asset::user("selections");
+		system::createDirectory(dir);
+	}
 
 	osdialog_filters* filters = osdialog_filters_parse(SELECTION_FILTERS);
 	DEFER({osdialog_filters_free(filters);});
 
-	char* pathC = osdialog_file(OSDIALOG_SAVE, selectionDir.c_str(), "Untitled.vcvs", filters);
+	char* pathC = osdialog_file(OSDIALOG_SAVE, dir.c_str(), "Untitled.vcvs", filters);
 	if (!pathC) {
 		// No path selected
 		return;
 	}
-	DEFER({std::free(pathC);});
-
 	std::string path = pathC;
+	std::free(pathC);
+
 	// Automatically append .vcvs extension
 	if (system::getExtension(path) != ".vcvs")
 		path += ".vcvs";
 
 	saveSelection(path);
+
+	settings::lastSelectionDirectory = system::getDirectory(path);
 }
 
 void RackWidget::copyClipboardSelection() {

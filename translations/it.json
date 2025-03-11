@@ -110,6 +110,8 @@
 	"MenuBar.view.window": "Finestra",
 	"MenuBar.view.fullscreen": "Schermo intero",
 	"MenuBar.view.frameRate": "Frequenza dei fotogrammi",
+	"MenuBar.view.pixelRatio": "Scala interfaccia",
+	"MenuBar.view.pixelRatio.auto": "Auto",
 	"MenuBar.view.zoomFit": "Adatta lo zoom ai moduli",
 	"MenuBar.view.mouseWheelZoom": "Rotella del mouse",
 	"MenuBar.view.mouseWheelZoom.scroll": "Scorrimento (%s per zoom)",

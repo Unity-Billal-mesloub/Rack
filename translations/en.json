@@ -110,6 +110,8 @@
 	"MenuBar.view.window": "Window",
 	"MenuBar.view.fullscreen": "Fullscreen",
 	"MenuBar.view.frameRate": "Frame rate",
+	"MenuBar.view.pixelRatio": "UI scale",
+	"MenuBar.view.pixelRatio.auto": "Auto",
 	"MenuBar.view.zoomFit": "Zoom to fit modules",
 	"MenuBar.view.mouseWheelZoom": "Mouse wheel",
 	"MenuBar.view.mouseWheelZoom.scroll": "Scroll (%s to zoom)",

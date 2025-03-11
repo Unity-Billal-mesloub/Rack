@@ -110,6 +110,8 @@
 	"MenuBar.view.window": "Fenster",
 	"MenuBar.view.fullscreen": "Vollbild",
 	"MenuBar.view.frameRate": "Bildwiederholrate",
+	"MenuBar.view.pixelRatio": "UI-Skalierung",
+	"MenuBar.view.pixelRatio.auto": "Auto",
 	"MenuBar.view.zoomFit": "Patch einpassen",
 	"MenuBar.view.mouseWheelZoom": "Mausrad",
 	"MenuBar.view.mouseWheelZoom.scroll": "Scrollen (%s zum Zoomen)",

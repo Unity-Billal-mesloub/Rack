@@ -110,6 +110,8 @@
     "MenuBar.view.window": "窗口样式",
     "MenuBar.view.fullscreen": "全屏",
     "MenuBar.view.frameRate": "帧率",
+    "MenuBar.view.pixelRatio": "界面缩放",
+    "MenuBar.view.pixelRatio.auto": "自动",
     "MenuBar.view.zoomFit": "缩放界面以适应模块",
     "MenuBar.view.mouseWheelZoom": "鼠标滚轮",
     "MenuBar.view.mouseWheelZoom.scroll": "滚动（%s 用于缩放）",

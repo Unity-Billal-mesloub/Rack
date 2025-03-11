@@ -110,6 +110,8 @@
 	"MenuBar.view.window": "ウィンドウ",
 	"MenuBar.view.fullscreen": "フルスクリーン",
 	"MenuBar.view.frameRate": "フレームレート",
+	"MenuBar.view.pixelRatio": "UI倍率",
+	"MenuBar.view.pixelRatio.auto": "自動",
 	"MenuBar.view.zoomFit": "モジュールに合わせてズーム",
 	"MenuBar.view.mouseWheelZoom": "マウスホイール",
 	"MenuBar.view.mouseWheelZoom.scroll": "スクロール（%sでズーム）",

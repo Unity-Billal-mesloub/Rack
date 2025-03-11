@@ -110,6 +110,8 @@
 	"MenuBar.view.window": "Fenêtre",
 	"MenuBar.view.fullscreen": "Plein écran",
 	"MenuBar.view.frameRate": "Taux de rafraîchissement",
+	"MenuBar.view.pixelRatio": "Échelle de l'interface",
+	"MenuBar.view.pixelRatio.auto": "Auto",
 	"MenuBar.view.zoomFit": "Ajuster le zoom aux modules",
 	"MenuBar.view.mouseWheelZoom": "Molette de la souris",
 	"MenuBar.view.mouseWheelZoom.scroll": "Défilement (%s pour zoomer)",

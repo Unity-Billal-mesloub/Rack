@@ -422,6 +422,11 @@ struct ViewButton : MenuButton {
 			}
 		}));
 
+		menu->addChild(createIndexPtrSubmenuItem(string::translate("MenuBar.view.pixelRatio"), {
+			string::translate("MenuBar.view.pixelRatio.auto"),
+			"100%", "200%", "300%"
+		}, &settings::pixelRatio));
+
 		ZoomSlider* zoomSlider = new ZoomSlider;
 		zoomSlider->box.size.x = 250.0;
 		menu->addChild(zoomSlider);

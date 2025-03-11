@@ -110,6 +110,8 @@
 	"MenuBar.view.window": "Ventana",
 	"MenuBar.view.fullscreen": "Pantalla completa",
 	"MenuBar.view.frameRate": "Tasa de fotogramas",
+	"MenuBar.view.pixelRatio": "Escala de interfaz",
+	"MenuBar.view.pixelRatio.auto": "Auto",
 	"MenuBar.view.zoomFit": "Ajustar zoom a módulos",
 	"MenuBar.view.mouseWheelZoom": "Rueda del ratón",
 	"MenuBar.view.mouseWheelZoom.scroll": "Desplazar (%s para zoom)",

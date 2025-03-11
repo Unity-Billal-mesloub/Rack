@@ -138,12 +138,18 @@ void init(Plugin* p) {
 	with open(os.path.join(plugin_dir, "src/plugin.cpp"), "w") as f:
 		f.write(plugin_cpp)
 
-	git_ignore = """/build
+	git_ignore = """# Ignore all dotfiles except git dotfiles
+.*
+!.git*
+
+# Binaries and build targets
+*.a
+*.so
+*.dylib
+*.dll
+/build
+/dep
 /dist
-/*.so
-/*.dylib
-/*.dll
-.DS_Store
 """
 	with open(os.path.join(plugin_dir, ".gitignore"), "w") as f:
 		f.write(git_ignore)

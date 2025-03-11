@@ -139,8 +139,9 @@ struct EditButton : MenuButton {
 
 		struct UndoItem : ui::MenuItem {
 			void step() override {
-				text = string::f(string::translate("MenuBar.edit.undo"), APP->history->getUndoName());
-				disabled = !APP->history->canUndo();
+				bool canUndo = APP->history->canUndo();
+				text = canUndo ? string::f(string::translate("MenuBar.edit.undoAction"), APP->history->getUndoName()) : string::translate("MenuBar.edit.undo");
+				disabled = !canUndo;
 				MenuItem::step();
 			}
 			void onAction(const ActionEvent& e) override {
@@ -151,8 +152,9 @@ struct EditButton : MenuButton {
 
 		struct RedoItem : ui::MenuItem {
 			void step() override {
-				text = string::f(string::translate("MenuBar.edit.redo"), APP->history->getRedoName());
-				disabled = !APP->history->canRedo();
+				bool canRedo = APP->history->canRedo();
+				text = canRedo ? string::f(string::translate("MenuBar.edit.redoAction"), APP->history->getRedoName()) : string::translate("MenuBar.edit.redo");
+				disabled = !canRedo;
 				MenuItem::step();
 			}
 			void onAction(const ActionEvent& e) override {

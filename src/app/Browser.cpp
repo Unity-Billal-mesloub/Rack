@@ -526,13 +526,13 @@ struct Browser : widget::OpaqueWidget {
 		headerLayout->addChild(favoriteButton);
 
 		clearButton = new ClearButton;
-		clearButton->box.size.x = 100;
+		clearButton->box.size.x = 130;
 		clearButton->text = string::translate("Browser.resetFilters");
 		clearButton->browser = this;
 		headerLayout->addChild(clearButton);
 
 		countLabel = new ui::Label;
-		countLabel->box.size.x = 100;
+		countLabel->box.size.x = 110;
 		headerLayout->addChild(countLabel);
 
 		SortButton* sortButton = new SortButton;

@@ -364,18 +364,8 @@ Window::Window() {
 
 	// Load UI fonts
 	uiFont = loadFont(asset::system("res/fonts/DejaVuSans.ttf"));
-	if (uiFont) {
-		std::shared_ptr<Font> jpFont = loadFont(asset::system("res/fonts/NotoSansJP-Medium.otf"));
-		if (jpFont)
-			nvgAddFallbackFontId(vg, uiFont->handle, jpFont->handle);
-		std::shared_ptr<Font> scFont = loadFont(asset::system("res/fonts/NotoSansSC-Medium.otf"));
-		if (scFont)
-			nvgAddFallbackFontId(vg, uiFont->handle, scFont->handle);
-		std::shared_ptr<Font> emojiFont = loadFont(asset::system("res/fonts/NotoEmoji-Medium.ttf"));
-		if (emojiFont)
-			nvgAddFallbackFontId(vg, uiFont->handle, emojiFont->handle);
+	if (uiFont)
 		bndSetFont(uiFont->handle);
-	}
 
 	if (APP->scene) {
 		widget::Widget::ContextCreateEvent e;
@@ -758,14 +748,39 @@ double Window::getFrameDurationRemaining() {
 
 
 std::shared_ptr<Font> Window::loadFont(const std::string& filename) {
-	const auto& pair = internal->fontCache.find(filename);
-	if (pair != internal->fontCache.end())
-		return pair->second;
+	// If font is already cached, no need to add fallback fonts again.
+	const auto& it = internal->fontCache.find(filename);
+	if (it != internal->fontCache.end())
+		return it->second;
+
+	// This redundantly searches the font cache, but it's not a performance issue because it only happens when font is first loaded.
+	std::shared_ptr<Font> font = loadFontWithoutFallbacks(filename);
+	if (!font)
+		return NULL;
+
+	std::shared_ptr<Font> jpFont = loadFontWithoutFallbacks(asset::system("res/fonts/NotoSansJP-Medium.otf"));
+	if (jpFont)
+		nvgAddFallbackFontId(vg, font->handle, jpFont->handle);
+	std::shared_ptr<Font> scFont = loadFontWithoutFallbacks(asset::system("res/fonts/NotoSansSC-Medium.otf"));
+	if (scFont)
+		nvgAddFallbackFontId(vg, font->handle, scFont->handle);
+	std::shared_ptr<Font> emojiFont = loadFontWithoutFallbacks(asset::system("res/fonts/NotoEmoji-Medium.ttf"));
+	if (emojiFont)
+		nvgAddFallbackFontId(vg, font->handle, emojiFont->handle);
+
+	return font;
+}
+
+
+std::shared_ptr<Font> Window::loadFontWithoutFallbacks(const std::string& filename) {
+	// Return cached font, even if null
+	const auto& it = internal->fontCache.find(filename);
+	if (it != internal->fontCache.end())
+		return it->second;
 
 	// Load font
-	std::shared_ptr<Font> font;
+	std::shared_ptr<Font> font = std::make_shared<Font>();
 	try {
-		font = std::make_shared<Font>();
 		font->loadFile(filename, vg);
 	}
 	catch (Exception& e) {
@@ -778,9 +793,9 @@ std::shared_ptr<Font> Window::loadFont(const std::string& filename) {
 
 
 std::shared_ptr<Image> Window::loadImage(const std::string& filename) {
-	const auto& pair = internal->imageCache.find(filename);
-	if (pair != internal->imageCache.end())
-		return pair->second;
+	const auto& it = internal->imageCache.find(filename);
+	if (it != internal->imageCache.end())
+		return it->second;
 
 	// Load image
 	std::shared_ptr<Image> image;

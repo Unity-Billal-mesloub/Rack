@@ -17,6 +17,7 @@
 	#include <execinfo.h> // for backtrace and backtrace_symbols
 	#include <unistd.h> // for execl
 	#include <sys/utsname.h>
+	#include <dlfcn.h> // for dladdr
 #endif
 
 #if defined ARCH_MAC
@@ -671,67 +672,39 @@ std::string getStackTrace() {
 
 #if defined ARCH_LIN || defined ARCH_MAC
 	stackLen = backtrace(stack, stackLen);
-	char** strings = backtrace_symbols(stack, stackLen);
-	if (!strings)
-		return "";
 
 	// Skip the first line because it's this function.
 	for (int i = 1; i < stackLen; i++) {
-		s += string::f("%d: ", stackLen - i - 1);
-		std::string line = strings[i];
-#if ARCH_LIN
-		// Parse line, e.g.
-		// ./main(__mangled_symbol+0x100) [0x12345678]
-		std::regex r(R"((.+?)\((.*?)\+(.+?)\) (.+?))");
-		std::smatch match;
-		if (std::regex_match(line, match, r)) {
-			s += match[1].str();
-			s += "(";
-			std::string symbol = match[2].str();
-			// Demangle symbol
-			char* symbolD = abi::__cxa_demangle(symbol.c_str(), NULL, NULL, NULL);
-			if (symbolD) {
-				symbol = symbolD;
-				free(symbolD);
+		// Get symbol info from stack address
+		Dl_info info = {};
+		if (dladdr(stack[i], &info)) {
+			// Ignore error
+		}
+
+		// Binary/library filename
+		s += info.dli_fname ? info.dli_fname : "??";
+		s += ": ";
+
+		// Attempt to demangle C++ symbol name
+		if (info.dli_sname) {
+			char* demangled = abi::__cxa_demangle(info.dli_sname, NULL, NULL, NULL);
+			if (demangled) {
+				s += demangled;
+				free(demangled);
 			}
-			s += symbol;
-			s += "+";
-			s += match[3].str();
-			s += ")";
+			else {
+				s += info.dli_sname;
+			}
 		}
 		else {
-			// If regex fails, just use the raw line
-			s += line;
+			s += "??";
 		}
-#elif defined ARCH_MAC
-		// Parse line, e.g.
-		// 1   Rack                                0x0000000002ddc3eb _mangled_symbol + 27
-		std::regex r(R"((\d+)\s+(.+?)\s+(.+?) (.*?) \+ (.+?))");
-		std::smatch match;
-		if (std::regex_match(line, match, r)) {
-			s += match[2].str();
-			s += "(";
-			std::string symbol = match[4].str();
-			// Demangle symbol
-			char* symbolD = abi::__cxa_demangle(symbol.c_str(), NULL, NULL, NULL);
-			if (symbolD) {
-				symbol = symbolD;
-				free(symbolD);
-			}
-			s += symbol;
-			s += "+";
-			s += match[5].str();
-			s += ")";
-		}
-		else {
-			// If regex fails, just use the raw line
-			s += line;
-		}
-#endif
+
+		s += " +";
+		ptrdiff_t offset = (char*) stack[i] - (char*) info.dli_saddr;
+		s += string::f("0x%x", offset);
 		s += "\n";
 	}
-	free(strings);
-
 #elif defined ARCH_WIN
 	HANDLE process = GetCurrentProcess();
 	SymInitialize(process, NULL, true);

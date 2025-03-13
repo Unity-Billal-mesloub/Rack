@@ -252,7 +252,7 @@ struct Engine::Internal {
 
 	int threadCount = 0;
 	std::vector<EngineWorker> workers;
-	HybridBarrier engineBarrier;
+	SpinBarrier engineBarrier;
 	HybridBarrier workerBarrier;
 	std::atomic<int> workerModuleIndex;
 	// For worker threads

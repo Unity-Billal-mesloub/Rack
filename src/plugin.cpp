@@ -133,7 +133,11 @@ static Plugin* loadPlugin(std::string path) {
 		INFO("Loading plugin from %s", path.c_str());
 
 	Plugin* plugin = new Plugin;
+
 	try {
+		if (path == "")
+			plugin->version = APP_VERSION;
+
 		// Set plugin path
 		plugin->path = (path == "") ? asset::systemDir : path;
 

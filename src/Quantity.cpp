@@ -58,23 +58,32 @@ static void teVarsInit() {
 		{"a", 9},
 		{"b", 11},
 	};
+	auto pushNoteName = [&](const std::string& name, int semi, int oct = 4) {
+		double voltage = oct - 4 + semi / 12.0;
+		teVariables.push_back({name, 440.0 * std::exp2(voltage - 9 / 12.0)});
+		teVariables.push_back({name + "v", voltage});
+	};
+	// Example: c, cs (or c#), and cb
+	// This overwrites Euler's number "e", but the note name is more important here, and you can type exp(1) instead.
 	for (const Note& note : notes) {
-		// Example: c, cs (or c#), and cb
-		teVariables.push_back({string::f("%s", note.name), 440.f * std::pow(2.0, (note.semi - 9) / 12.f)});
-		teVariables.push_back({string::f("%ss", note.name), 440.f * std::pow(2.0, (note.semi - 9 + 1) / 12.f)});
-		teVariables.push_back({string::f("%sb", note.name), 440.f * std::pow(2.0, (note.semi - 9 - 1) / 12.f)});
+		pushNoteName(string::f("%s", note.name), note.semi);
+		pushNoteName(string::f("%ss", note.name), note.semi + 1);
+		pushNoteName(string::f("%sb", note.name), note.semi - 1);
+	}
+	// Example: c4, cs4 (or c#4), and cb4
+	for (const Note& note : notes) {
 		for (int oct = 0; oct <= 9; oct++) {
-			// Example: c4, cs4 (or c#4), and cb4
-			teVariables.push_back({string::f("%s%d", note.name, oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9) / 12.f)});
-			teVariables.push_back({string::f("%ss%d", note.name, oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9 + 1) / 12.f)});
-			teVariables.push_back({string::f("%sb%d", note.name, oct), 440.f * std::pow(2.0, oct - 4 + (note.semi - 9 - 1) / 12.f)});
+			pushNoteName(string::f("%s%d", note.name, oct), note.semi, oct);
+			pushNoteName(string::f("%ss%d", note.name, oct), note.semi + 1, oct);
+			pushNoteName(string::f("%sb%d", note.name, oct), note.semi - 1, oct);
 		}
 	}
 
 	// Build teVars from teVariables
+	// After this point, the addresses of name.c_str() and values in teVariables can't be changed.
 	teVars.reserve(teVariables.size());
-	for (size_t i = 0; i < teVariables.size(); i++) {
-		teVars.push_back({teVariables[i].name.c_str(), &teVariables[i].value, TE_VARIABLE, NULL});
+	for (const TeVariable& teVariable : teVariables) {
+		teVars.push_back({teVariable.name.c_str(), &teVariable.value, TE_VARIABLE, NULL});
 	}
 
 	// Add custom functions

@@ -20,6 +20,12 @@
 - Christoph Scholtes: [Library reviews](https://github.com/VCVRack/library) and [plugin toolchain](https://github.com/VCVRack/rack-plugin-toolchain)
 - Rack plugin developers: Authorship shown on each plugin's [VCV Library](https://library.vcvrack.com/) page
 - Rack users like you: [Bug reports and feature requests](https://vcvrack.com/support)
+- German translation: Stephan Müsch, Norbert Denninger
+- Spanish translation: Kevin U. Cano Guerra, Coriander V. Pines
+- French translation: Pyer
+- Italian translation: Alessandro Paglia
+- Chinese (Simplified) translation: NoiseTone
+- Japanese translation: [Leo Kuroshita](https://x.com/kurogedelic)
 
 ## Dependency libraries
 

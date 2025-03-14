@@ -16,23 +16,23 @@ In this document, Ctrl means Command (⌘) on Mac.
 - Add note voltage constants to parameter expression evaluator such as `C4v`, `A#5v`, `Gb0v`, etc.
 - Allow installing to user Applications and plugin folders on Mac.
 - Remember last patch and selection folder after creating a new patch.
-- Fix failure to load/save patches on Mac x64.
+- Fix loading/saving patches on Mac x64.
 - Fix non-ASCII audio device names displaying as blank on Windows.
 - Fix key command mapping and names on non-QWERTY keyboard layouts.
 - Use Mac-native arrow key commands for navigating text fields.
 - Rack Pro
 	- Fix automation parameter values resetting to 0.0 upon initialization in VST3 in some DAWs.
 	- Allow VST3 plugin to receive 16 MIDI channels of MIDI CC, pitch bend, and channel aftertouch.
+	- Improve CLAP plugin loading speed.
 - Core
 	- Fix DC filter accuracy of Right input when normalled to Left input in VCV Audio 2.
 	- Change default MIDI CC numbers of *VCV MIDI CC to CV* and *VCV CV to MIDI CC* modules to 1-16 instead of 0-15.
-	- Improve CLAP plugin loading speed.
 - API
-	- Update to zstd 1.5.6 and libarchive 3.7.7.
-	- Update RtAudio.
 	- Add `Widget::KeyBaseEvent::isKeyCommand()` for checking key commands on all keyboard layouts.
 	- Add `settings::language` global variable.
 	- Add `string::UTF32toUTF8()`, `UTF8toUTF32()`, and `UTF8*()` functions.
+	- Update to zstd 1.5.6 and libarchive 3.7.7.
+	- Update RtAudio.
 
 ### 2.6.0 (2024-11-20)
 - Add ability to grab all plugs stacked on a port with the "All cables" menu item.

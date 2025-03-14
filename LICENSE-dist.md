@@ -374,7 +374,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     * The following source files are also subject in whole or in part to
       a 3-clause UC Regents copyright; please read the individual source
       files for details:
-       libarchive/archive_entry.c
        libarchive/archive_read_support_filter_compress.c
        libarchive/archive_write_add_filter_compress.c
        libarchive/mtree.5
@@ -529,7 +528,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 RtAudio: a set of realtime audio i/o C++ classes
 
-Copyright (c) 2001-2017 Gary P. Scavone
+Copyright (c) 2001-2023 Gary P. Scavone
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files

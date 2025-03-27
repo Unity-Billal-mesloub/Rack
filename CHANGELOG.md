@@ -2,7 +2,7 @@
 
 In this document, Ctrl means Command (⌘) on Mac.
 
-### 2.5.3 (2025-03-26)
+### 2.6.3 (2025-03-26)
 - Fix failure to launch on Windows 7.
 - Rack Pro
 	- Audio Unit: Fix crash when controlling multiple parameters with *VCV MIDI Map*.

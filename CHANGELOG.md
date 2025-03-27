@@ -2,6 +2,11 @@
 
 In this document, Ctrl means Command (⌘) on Mac.
 
+### 2.5.3 (2025-03-26)
+- Fix failure to launch on Windows 7.
+- Rack Pro
+	- Audio Unit: Fix crash when sending multiple MIDI CC messages to plugin simultaneously.
+
 ### 2.6.2 (2025-03-17)
 - Fix incorrect audio driver being loaded from patches made in Rack ≤2.6.0.
 - Fix Mac installer creating duplicate app bundle.

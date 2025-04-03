@@ -32,7 +32,7 @@ ifdef ARCH_LIN
 	# When Rack loads a plugin, it symlinks /tmp/Rack2 to its system dir, so the plugin can link to libRack.
 	LDFLAGS += -Wl,-rpath=/tmp/Rack2
 	# Since the plugin's compiler could be a different version than Rack's compiler, link libstdc++ and libgcc statically to avoid ABI issues.
-	LDFLAGS += -static-libstdc++ -static-libgcc
+	LDFLAGS += -static-libgcc
 	XDG_DATA_HOME ?= $(HOME)/.local/share
 	RACK_USER_DIR ?= $(XDG_DATA_HOME)/Rack2
 endif
@@ -46,7 +46,6 @@ endif
 
 ifdef ARCH_WIN
 	TARGET := $(TARGET).dll
-	LDFLAGS += -static-libstdc++
 	RACK_USER_DIR ?= $(LOCALAPPDATA)/Rack2
 endif
 

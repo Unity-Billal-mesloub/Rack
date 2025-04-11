@@ -138,10 +138,13 @@ perf: $(STANDALONE_TARGET)
 	hotspot perf.data
 	rm perf.data
 
+# VALGRIND_FLAGS += --gen-suppressions=all
+VALGRIND_FLAGS += --suppressions=valgrind.supp
+# VALGRIND_FLAGS += --leak-check=full
+VALGRIND_FLAGS += --track-origins=yes
+VALGRIND_FLAGS += --exit-on-first-error=yes
 valgrind: $(STANDALONE_TARGET)
-	# --gen-suppressions=yes
-	# --leak-check=full
-	valgrind --suppressions=valgrind.supp ./$< -d
+	valgrind $(VALGRIND_FLAGS) ./$< -d
 
 clean:
 	rm -rfv build dist $(TARGET) $(STANDALONE_TARGET) *.a

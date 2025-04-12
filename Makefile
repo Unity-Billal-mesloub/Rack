@@ -138,9 +138,9 @@ perf: $(STANDALONE_TARGET)
 	hotspot perf.data
 	rm perf.data
 
-# VALGRIND_FLAGS += --gen-suppressions=all
+VALGRIND_FLAGS += --gen-suppressions=all
 VALGRIND_FLAGS += --suppressions=valgrind.supp
-# VALGRIND_FLAGS += --leak-check=full
+VALGRIND_FLAGS += --leak-check=full
 VALGRIND_FLAGS += --track-origins=yes
 VALGRIND_FLAGS += --exit-on-first-error=yes
 valgrind: $(STANDALONE_TARGET)

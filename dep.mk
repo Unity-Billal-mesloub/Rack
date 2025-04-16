@@ -40,8 +40,6 @@ UNZIP := unzip -o
 CONFIGURE := ./configure --prefix="$(DEP_PATH)"
 
 CMAKE := cmake
-# Cmake 4 no longer emulates behavior from Cmake <3.5. But most libraries are fine if we use policies from a higher Cmake version.
-CMAKE += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 ifdef ARCH_WIN
 	CMAKE += -DCMAKE_SYSTEM_NAME=Windows
 endif

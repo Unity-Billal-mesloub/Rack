@@ -2,11 +2,10 @@
 
 In this document, Ctrl means Command (⌘) on Mac.
 
-### 2.6.4 (2025-04-16)
+### 2.6.4 (2025-04-18)
 - Fix dragging knobs on Mac when UI scale is set to non-Auto.
 - SDK
-	- Make plugins on Windows and Linux dynamically link to libRack's libstdc++ instead of statically.
-	- Fix dep build failure when CMake 4 is installed.
+	- Fix GLEW and libarchive build failure when CMake 4 is installed.
 	- Update to GLEW 2.2.0.
 
 ### 2.6.3 (2025-03-26)

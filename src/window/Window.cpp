@@ -638,9 +638,9 @@ void Window::cursorLock() {
 
 	// Due to a bug in GLFW, setting GLFW_CURSOR_DISABLED causes a spurious mouse position delta after a few frames.
 	// https://github.com/glfw/glfw/issues/2523
-	// Emperically, this seems to be up to 3-6 frames at 60 Hz but in fewer frames at lower framerates.
+	// Empirically, this seems to be up to 3-6 frames at 60 Hz but in fewer frames at lower framerates, so we use time units.
 #if defined ARCH_MAC
-	internal->ignoreMouseDeltaUntil = internal->frameTime + 0.09;
+	internal->ignoreMouseDeltaUntil = internal->frameTime + 0.12;
 #endif
 }
 

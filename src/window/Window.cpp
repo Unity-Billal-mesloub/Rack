@@ -640,7 +640,7 @@ void Window::cursorLock() {
 	// https://github.com/glfw/glfw/issues/2523
 	// Empirically, this seems to be up to 3-6 frames at 60 Hz but in fewer frames at lower framerates, so we use time units.
 #if defined ARCH_MAC
-	internal->ignoreMouseDeltaUntil = internal->frameTime + 0.12;
+	internal->ignoreMouseDeltaUntil = internal->frameTime + 0.15;
 #endif
 }
 

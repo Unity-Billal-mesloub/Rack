@@ -584,7 +584,6 @@ void save(std::string path) {
 
 	json_dumpf(rootJ, file, JSON_INDENT(2));
 	std::fclose(file);
-	system::remove(path);
 	system::rename(tmpPath, path);
 }
 

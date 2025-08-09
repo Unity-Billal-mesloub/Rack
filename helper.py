@@ -387,15 +387,15 @@ def panel_to_components(tree):
 
 		color = color.lower()
 
-		if color in ['#ff0000', '#f00', 'red']:
+		if color in ['#ff0000', '#f00', 'rgb(255,0,0)', 'red']:
 			components['params'].append(c)
-		if color in ['#00ff00', '#0f0', 'lime']:
+		if color in ['#00ff00', '#0f0', 'rgb(0,255,0)', 'lime']:
 			components['inputs'].append(c)
-		if color in ['#0000ff', '#00f', 'blue']:
+		if color in ['#0000ff', '#00f', 'rgb(0,0,255)', 'blue']:
 			components['outputs'].append(c)
-		if color in ['#ff00ff', '#f0f', 'magenta']:
+		if color in ['#ff00ff', '#f0f', 'rgb(255,0,255)', 'magenta']:
 			components['lights'].append(c)
-		if color in ['#ffff00', '#ff0', 'yellow']:
+		if color in ['#ffff00', '#ff0', 'rgb(255,255,0)', 'yellow']:
 			components['widgets'].append(c)
 
 	# Sort components

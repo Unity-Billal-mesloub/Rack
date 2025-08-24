@@ -35,7 +35,12 @@ struct MIDI_Gate : Module {
 
 	// Settings
 
-	bool velocityMode;
+	enum VelocityMode {
+		FIXED_MODE,
+		VELOCITY_MODE,
+		AFTERTOUCH_MODE,
+	};
+	VelocityMode velocityMode;
 	bool mpeMode;
 	bool trigMode;
 
@@ -55,7 +60,7 @@ struct MIDI_Gate : Module {
 		}
 		learningId = -1;
 		midiInput.reset();
-		velocityMode = false;
+		velocityMode = FIXED_MODE;
 		mpeMode = false;
 		trigMode = false;
 		panic();
@@ -65,7 +70,7 @@ struct MIDI_Gate : Module {
 		for (int i = 0; i < 16; i++) {
 			for (int c = 0; c < 16; c++) {
 				gates[i][c] = false;
-				velocities[i][c] = 0;
+				velocities[i][c] = 127;
 				trigPulses[i][c].reset();
 			}
 		}
@@ -83,7 +88,9 @@ struct MIDI_Gate : Module {
 			for (int c = 0; c < channels; c++) {
 				bool pulse = trigPulses[i][c].process(args.sampleTime);
 				bool gate = pulse || (!trigMode && gates[i][c]);
-				float velocity = gate ? velocityMode ? (velocities[i][c] / 127.f) : 1.f : 0.f;
+				float velocity = gate ? 1.f : 0.f;
+				if (velocityMode != FIXED_MODE)
+					velocity *= velocities[i][c] / 127.f;
 				outputs[GATE_OUTPUTS + i].setVoltage(velocity * 10.f, c);
 			}
 			outputs[GATE_OUTPUTS + i].setChannels(channels);
@@ -98,12 +105,36 @@ struct MIDI_Gate : Module {
 			} break;
 			// note on
 			case 0x9: {
-				if (msg.getValue() > 0) {
-					pressNote(msg.getChannel(), msg.getNote(), msg.getValue());
+				uint8_t velocity = msg.getValue();
+				if (velocity > 0) {
+					pressNote(msg.getChannel(), msg.getNote(), velocity);
 				}
 				else {
 					// Note-on event with velocity 0 is an alternative for note-off event.
 					releaseNote(msg.getChannel(), msg.getNote());
+				}
+			} break;
+			// polyphonic pressure/aftertouch
+			case 0xa: {
+				if (velocityMode == AFTERTOUCH_MODE) {
+					uint8_t c = mpeMode ? msg.getChannel() : 0;
+					uint8_t note = msg.getNote();
+					uint8_t velocity = msg.getValue();
+					for (int i = 0; i < 16; i++) {
+						if (learnedNotes[i] == note) {
+							velocities[i][c] = velocity;
+						}
+					}
+				}
+			} break;
+			// channel pressure/aftertouch
+			case 0xd: {
+				if (velocityMode == AFTERTOUCH_MODE) {
+					uint8_t c = mpeMode ? msg.getChannel() : 0;
+					uint8_t velocity = msg.getNote();
+					for (int i = 0; i < 16; i++) {
+						velocities[i][c] = velocity;
+					}
 				}
 			} break;
 			default: break;
@@ -121,7 +152,8 @@ struct MIDI_Gate : Module {
 		for (int i = 0; i < 16; i++) {
 			if (learnedNotes[i] == note) {
 				gates[i][c] = true;
-				velocities[i][c] = vel;
+				if (velocityMode == VELOCITY_MODE)
+					velocities[i][c] = vel;
 				trigPulses[i][c].trigger(1e-3f);
 			}
 		}
@@ -153,12 +185,11 @@ struct MIDI_Gate : Module {
 
 		json_t* notesJ = json_array();
 		for (int i = 0; i < 16; i++) {
-			json_t* noteJ = json_integer(learnedNotes[i]);
-			json_array_append_new(notesJ, noteJ);
+			json_array_append_new(notesJ, json_integer(learnedNotes[i]));
 		}
 		json_object_set_new(rootJ, "notes", notesJ);
 
-		json_object_set_new(rootJ, "velocity", json_boolean(velocityMode));
+		json_object_set_new(rootJ, "velocity", json_integer(velocityMode));
 
 		json_object_set_new(rootJ, "mpeMode", json_boolean(mpeMode));
 
@@ -180,8 +211,11 @@ struct MIDI_Gate : Module {
 		}
 
 		json_t* velocityJ = json_object_get(rootJ, "velocity");
-		if (velocityJ)
-			velocityMode = json_boolean_value(velocityJ);
+		// Boolean in Rack <=v2.6.4
+		if (json_is_true(velocityJ))
+			velocityMode = VELOCITY_MODE;
+		else if (json_is_integer(velocityJ))
+			velocityMode = VelocityMode(json_integer_value(velocityJ));
 
 		json_t* mpeModeJ = json_object_get(rootJ, "mpeMode");
 		if (mpeModeJ)
@@ -238,7 +272,11 @@ struct MIDI_GateWidget : ModuleWidget {
 
 		menu->addChild(new MenuSeparator);
 
-		menu->addChild(createBoolPtrMenuItem("Velocity mode", "", &module->velocityMode));
+		menu->addChild(createIndexPtrSubmenuItem("Gate amplitude", {
+			"10V",
+			"Velocity",
+			"Aftertouch",
+		}, &module->velocityMode));
 
 		menu->addChild(createBoolPtrMenuItem("MPE mode", "", &module->mpeMode));
 

@@ -166,7 +166,6 @@ struct MIDI_CVWidget : ModuleWidget {
 			}
 		}));
 
-		// TODO Panic when set
 		menu->addChild(createIndexSubmenuItem("Monophonic priority", {
 			"Last",
 			"First",
@@ -175,12 +174,11 @@ struct MIDI_CVWidget : ModuleWidget {
 		}, [=]() {
 			return module->midiParser.monoMode;
 		}, [=](size_t monoMode) {
-			module->midiParser.setMonoMode((dsp::MidiParser<16>::MonoMode) monoMode);
+			module->midiParser.setMonoMode(decltype(module->midiParser)::MonoMode(monoMode));
 		}));
 
 		menu->addChild(createBoolPtrMenuItem("Release retrigger", "", &module->midiParser.retriggerOnResume));
 
-		// TODO Panic when set
 		menu->addChild(createIndexSubmenuItem("Polyphony mode", {
 			"Rotate",
 			"Reuse",
@@ -189,7 +187,7 @@ struct MIDI_CVWidget : ModuleWidget {
 		}, [=]() {
 			return module->midiParser.polyMode;
 		}, [=](size_t polyMode) {
-			module->midiParser.setPolyMode((dsp::MidiParser<16>::PolyMode) polyMode);
+			module->midiParser.setPolyMode(decltype(module->midiParser)::PolyMode(polyMode));
 		}));
 
 		menu->addChild(new MenuSeparator);

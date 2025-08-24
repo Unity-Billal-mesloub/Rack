@@ -22,18 +22,22 @@ struct MIDI_Gate : Module {
 
 	midi::InputQueue midiInput;
 
-	/** [cell][channel] */
+	/** True when a cell's gate is held. [cell][channel] */
 	bool gates[16][16];
-	/** [cell][channel] */
-	float gateTimes[16][16];
-	/** [cell][channel] */
+	/** Last velocity value of cell. [cell][channel] */
 	uint8_t velocities[16][16];
+	/** Triggered when a cell's note is played. [cell][channel] */
+	dsp::PulseGenerator trigPulses[16][16];
 	/** Cell ID in learn mode, or -1 if none. */
 	int learningId;
 	/** [cell] */
 	int8_t learnedNotes[16];
+
+	// Settings
+
 	bool velocityMode;
 	bool mpeMode;
+	bool trigMode;
 
 	MIDI_Gate() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -50,17 +54,19 @@ struct MIDI_Gate : Module {
 			}
 		}
 		learningId = -1;
-		panic();
 		midiInput.reset();
 		velocityMode = false;
 		mpeMode = false;
+		trigMode = false;
+		panic();
 	}
 
 	void panic() {
 		for (int i = 0; i < 16; i++) {
 			for (int c = 0; c < 16; c++) {
 				gates[i][c] = false;
-				gateTimes[i][c] = 0.f;
+				velocities[i][c] = 0;
+				trigPulses[i][c].reset();
 			}
 		}
 	}
@@ -74,18 +80,13 @@ struct MIDI_Gate : Module {
 		int channels = mpeMode ? 16 : 1;
 
 		for (int i = 0; i < 16; i++) {
-			outputs[GATE_OUTPUTS + i].setChannels(channels);
 			for (int c = 0; c < channels; c++) {
-				// Make sure all pulses last longer than 1ms
-				if (gates[i][c] || gateTimes[i][c] > 0.f) {
-					float velocity = velocityMode ? (velocities[i][c] / 127.f) : 1.f;
-					outputs[GATE_OUTPUTS + i].setVoltage(velocity * 10.f, c);
-					gateTimes[i][c] -= args.sampleTime;
-				}
-				else {
-					outputs[GATE_OUTPUTS + i].setVoltage(0.f, c);
-				}
+				bool pulse = trigPulses[i][c].process(args.sampleTime);
+				bool gate = pulse || (!trigMode && gates[i][c]);
+				float velocity = gate ? velocityMode ? (velocities[i][c] / 127.f) : 1.f : 0.f;
+				outputs[GATE_OUTPUTS + i].setVoltage(velocity * 10.f, c);
 			}
+			outputs[GATE_OUTPUTS + i].setChannels(channels);
 		}
 	}
 
@@ -101,7 +102,7 @@ struct MIDI_Gate : Module {
 					pressNote(msg.getChannel(), msg.getNote(), msg.getValue());
 				}
 				else {
-					// Many stupid keyboards send a "note on" command with 0 velocity to mean "note release"
+					// Note-on event with velocity 0 is an alternative for note-off event.
 					releaseNote(msg.getChannel(), msg.getNote());
 				}
 			} break;
@@ -120,8 +121,8 @@ struct MIDI_Gate : Module {
 		for (int i = 0; i < 16; i++) {
 			if (learnedNotes[i] == note) {
 				gates[i][c] = true;
-				gateTimes[i][c] = 1e-3f;
 				velocities[i][c] = vel;
+				trigPulses[i][c].trigger(1e-3f);
 			}
 		}
 	}
@@ -159,9 +160,12 @@ struct MIDI_Gate : Module {
 
 		json_object_set_new(rootJ, "velocity", json_boolean(velocityMode));
 
+		json_object_set_new(rootJ, "mpeMode", json_boolean(mpeMode));
+
+		json_object_set_new(rootJ, "trigMode", json_boolean(trigMode));
+
 		json_object_set_new(rootJ, "midi", midiInput.toJson());
 
-		json_object_set_new(rootJ, "mpeMode", json_boolean(mpeMode));
 		return rootJ;
 	}
 
@@ -179,13 +183,17 @@ struct MIDI_Gate : Module {
 		if (velocityJ)
 			velocityMode = json_boolean_value(velocityJ);
 
-		json_t* midiJ = json_object_get(rootJ, "midi");
-		if (midiJ)
-			midiInput.fromJson(midiJ);
-
 		json_t* mpeModeJ = json_object_get(rootJ, "mpeMode");
 		if (mpeModeJ)
 			mpeMode = json_boolean_value(mpeModeJ);
+
+		json_t* trigModeJ = json_object_get(rootJ, "trigMode");
+		if (trigModeJ)
+			trigMode = json_boolean_value(trigModeJ);
+
+		json_t* midiJ = json_object_get(rootJ, "midi");
+		if (midiJ)
+			midiInput.fromJson(midiJ);
 	}
 };
 
@@ -234,9 +242,13 @@ struct MIDI_GateWidget : ModuleWidget {
 
 		menu->addChild(createBoolPtrMenuItem("MPE mode", "", &module->mpeMode));
 
-		menu->addChild(createMenuItem("Panic", "",
-			[=]() {module->panic();}
-		));
+		menu->addChild(createBoolPtrMenuItem("Trigger mode", "", &module->trigMode));
+
+		menu->addChild(new MenuSeparator);
+
+		menu->addChild(createMenuItem("Panic", "", [=]() {
+			module->panic();
+		}));
 	}
 };
 

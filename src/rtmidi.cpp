@@ -405,7 +405,7 @@ void rtmidiInit() {
 			midi::addDriver(driverId, driver);
 		}
 		catch (Exception& e) {
-			WARN("Could not create RtMidiDriver %d", api);
+			WARN("%s", e.what());
 		}
 	}
 }

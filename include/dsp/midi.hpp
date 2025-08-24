@@ -16,6 +16,7 @@ CHANNELS is the number of polyphony channels. Use 1 for monophonic.
 */
 template <int CHANNELS>
 struct MidiGenerator {
+	uint8_t channels;
 	int8_t vels[CHANNELS];
 	int8_t notes[CHANNELS];
 	bool gates[CHANNELS];
@@ -34,6 +35,7 @@ struct MidiGenerator {
 	}
 
 	void reset() {
+		channels = CHANNELS;
 		for (int c = 0; c < CHANNELS; c++) {
 			vels[c] = 100;
 			notes[c] = 60;
@@ -63,6 +65,16 @@ struct MidiGenerator {
 			m.setFrame(frame);
 			onMessage(m);
 		}
+	}
+
+	void setChannels(uint8_t channels) {
+		if (this->channels == channels)
+			return;
+		// Disable notes when channels decreases
+		for (uint8_t c = channels; c < this->channels; c++) {
+			setNoteGate(notes[c], false, c);
+		}
+		this->channels = channels;
 	}
 
 	/** Must be called before setNoteGate(). */

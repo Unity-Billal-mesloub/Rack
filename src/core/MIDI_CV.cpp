@@ -177,7 +177,7 @@ struct MIDI_CVWidget : ModuleWidget {
 			module->midiParser.setMonoMode(decltype(module->midiParser)::MonoMode(monoMode));
 		}));
 
-		menu->addChild(createBoolPtrMenuItem("Release retrigger", "", &module->midiParser.retriggerOnResume));
+		menu->addChild(createBoolPtrMenuItem("Retrigger on release", "", &module->midiParser.retriggerOnResume));
 
 		menu->addChild(createIndexSubmenuItem("Polyphony mode", {
 			"Rotate",
@@ -191,6 +191,8 @@ struct MIDI_CVWidget : ModuleWidget {
 		}));
 
 		menu->addChild(new MenuSeparator);
+
+		menu->addChild(createBoolPtrMenuItem("Use release velocity", "", &module->midiParser.releaseVelocityEnabled));
 
 		static const std::vector<float> pwRanges = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 24, 36, 48};
 		auto getPwRangeLabel = [](float pwRange) -> std::string {

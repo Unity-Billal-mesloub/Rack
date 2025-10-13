@@ -103,6 +103,8 @@ struct Window::Internal {
 	double lastFrameDuration = NAN;
 
 	math::Vec lastMousePos;
+	double lockedCursorPosX = 0.0;
+	double lockedCursorPosY = 0.0;
 
 	std::map<std::string, std::shared_ptr<Font>> fontCache;
 	std::map<std::string, std::shared_ptr<Image>> imageCache;
@@ -167,12 +169,11 @@ static void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 	math::Vec mouseDelta = mousePos.minus(APP->window->internal->lastMousePos);
 
 	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_HIDDEN) {
-		math::Vec lastMousePos = APP->window->internal->lastMousePos;
-		glfwSetCursorPos(win, lastMousePos.x, lastMousePos.y);
+		glfwSetCursorPos(win, APP->window->internal->lockedCursorPosX, APP->window->internal->lockedCursorPosY);
+		mousePos = math::Vec(APP->window->internal->lockedCursorPosX, APP->window->internal->lockedCursorPosY).div(APP->window->pixelRatio / APP->window->windowRatio).round();
 	}
-	else {
-		APP->window->internal->lastMousePos = mousePos;
-	}
+
+	APP->window->internal->lastMousePos = mousePos;
 
 	APP->event->handleHover(mousePos, mouseDelta);
 
@@ -633,6 +634,7 @@ void Window::cursorLock() {
 	// GLFW_CURSOR_DISABLED is buggy.
 	// https://github.com/glfw/glfw/issues/2523
 	// So hide the cursor instead and reset mouse position in cursorPosCallback().
+	glfwGetCursorPos(win, &internal->lockedCursorPosX, &internal->lockedCursorPosY);
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 

@@ -103,8 +103,9 @@ struct Window::Internal {
 	double lastFrameDuration = NAN;
 
 	math::Vec lastMousePos;
-	double lockedCursorPosX = 0.0;
-	double lockedCursorPosY = 0.0;
+	bool cursorLocked = false;
+	double cursorLockedPosX = 0.0;
+	double cursorLockedPosY = 0.0;
 
 	std::map<std::string, std::shared_ptr<Font>> fontCache;
 	std::map<std::string, std::shared_ptr<Image>> imageCache;
@@ -165,23 +166,36 @@ static void mouseButtonCallback(GLFWwindow* win, int button, int action, int mod
 
 static void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 	contextSet((Context*) glfwGetWindowUserPointer(win));
-	math::Vec mousePos = math::Vec(xpos, ypos).div(APP->window->pixelRatio / APP->window->windowRatio).round();
-	math::Vec mouseDelta = mousePos.minus(APP->window->internal->lastMousePos);
+	Window* window = APP->window;
 
-	if (glfwGetInputMode(win, GLFW_CURSOR) == GLFW_CURSOR_HIDDEN) {
-		glfwSetCursorPos(win, APP->window->internal->lockedCursorPosX, APP->window->internal->lockedCursorPosY);
-		mousePos = math::Vec(APP->window->internal->lockedCursorPosX, APP->window->internal->lockedCursorPosY).div(APP->window->pixelRatio / APP->window->windowRatio).round();
+	int width, height;
+	glfwGetWindowSize(win, &width, &height);
+	float ratio = window->pixelRatio / window->windowRatio;
+
+	math::Vec mousePos;
+	math::Vec mouseDelta;
+
+	if (window->internal->cursorLocked) {
+		mousePos = (math::Vec(window->internal->cursorLockedPosX, window->internal->cursorLockedPosY) / ratio).round();
+		mouseDelta = math::Vec(xpos - width / 2, ypos - height / 2) / ratio;
+
+		// Reset cursor to center of screen
+		glfwSetCursorPos(win, width / 2, height / 2);
 	}
+	else {
+		mousePos = (math::Vec(xpos, ypos) / ratio).round();
+		mouseDelta = mousePos - window->internal->lastMousePos;
 
-	APP->window->internal->lastMousePos = mousePos;
+		window->internal->lastMousePos = mousePos;
+	}
 
 	APP->event->handleHover(mousePos, mouseDelta);
 
-	// Keyboard/mouse MIDI driver
-	int width, height;
-	glfwGetWindowSize(win, &width, &height);
-	math::Vec scaledPos(xpos / width, ypos / height);
-	keyboard::mouseMove(scaledPos);
+	if (!window->internal->cursorLocked) {
+		// Keyboard/mouse MIDI driver
+		math::Vec scaledPos(xpos / width, ypos / height);
+		keyboard::mouseMove(scaledPos);
+	}
 }
 
 
@@ -630,25 +644,37 @@ void Window::close() {
 void Window::cursorLock() {
 	if (!settings::allowCursorLock)
 		return;
+	if (internal->cursorLocked)
+		return;
 
 	// GLFW_CURSOR_DISABLED is buggy.
 	// https://github.com/glfw/glfw/issues/2523
-	// So hide the cursor instead and reset mouse position in cursorPosCallback().
-	glfwGetCursorPos(win, &internal->lockedCursorPosX, &internal->lockedCursorPosY);
+	// So instead, hide the cursor, move cursor to center of window, and reset mouse position every frame in cursorPosCallback().
+	glfwGetCursorPos(win, &internal->cursorLockedPosX, &internal->cursorLockedPosY);
+	internal->cursorLocked = true;
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+	int width, height;
+	glfwGetWindowSize(win, &width, &height);
+	glfwSetCursorPos(win, width / 2, height / 2);
 }
 
 
 void Window::cursorUnlock() {
 	if (!settings::allowCursorLock)
 		return;
+	if (!internal->cursorLocked)
+		return;
 
+	// Restore cursor position when locked
+	glfwSetCursorPos(win, internal->cursorLockedPosX, internal->cursorLockedPosY);
+	internal->cursorLocked = false;
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 
 bool Window::isCursorLocked() {
-	return glfwGetInputMode(win, GLFW_CURSOR) != GLFW_CURSOR_NORMAL;
+	return internal->cursorLocked;
 }
 
 

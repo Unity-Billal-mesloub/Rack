@@ -2,6 +2,19 @@
 
 In this document, Ctrl means Command (⌘) on Mac.
 
+### 2.6.5 (2025-10-22)
+- Fix occasional jump in knob position immediately after clicking knob on Mac and Windows.
+- Core
+	- *MIDI to CV*
+		- Add Last, First, Lowest, and Highest monophonic priority modes.
+		- Add "Retrigger on legato release" mode.
+		- Add "Use release velocity" mode.
+	- *MIDI to Gate*
+		- Add "Trigger" output type.
+		- Add "Aftertouch" output amplitude mode.
+- SDK
+	- Handle more color code formats in `helper.py`.
+
 ### 2.6.4 (2025-04-18)
 - Fix dragging knobs on Mac when UI scale is set to non-Auto.
 - SDK

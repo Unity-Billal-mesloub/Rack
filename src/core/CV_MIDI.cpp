@@ -184,7 +184,7 @@ struct CV_MIDIWidget : ModuleWidget {
 
 		menu->addChild(new MenuSeparator);
 
-		menu->addChild(createMenuItem("Panic", "",
+		menu->addChild(createMenuItem("Reset MIDI (Panic)", "",
 			[=]() {module->midiOutput.panic();}
 		));
 	}

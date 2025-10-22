@@ -177,9 +177,7 @@ struct MIDI_CVWidget : ModuleWidget {
 			module->midiParser.setMonoMode(decltype(module->midiParser)::MonoMode(monoMode));
 		}));
 
-		menu->addChild(createBoolPtrMenuItem("Retrigger on release", "", &module->midiParser.retriggerOnResume));
-
-		menu->addChild(createIndexSubmenuItem("Polyphony mode", {
+		menu->addChild(createIndexSubmenuItem("Polyphony allocation", {
 			"Rotate",
 			"Reuse",
 			"Reset",
@@ -189,6 +187,8 @@ struct MIDI_CVWidget : ModuleWidget {
 		}, [=](size_t polyMode) {
 			module->midiParser.setPolyMode(decltype(module->midiParser)::PolyMode(polyMode));
 		}));
+
+		menu->addChild(createBoolPtrMenuItem("Retrigger on legato release", "", &module->midiParser.retriggerOnResume));
 
 		menu->addChild(new MenuSeparator);
 
@@ -229,7 +229,7 @@ struct MIDI_CVWidget : ModuleWidget {
 
 		menu->addChild(new MenuSeparator);
 
-		menu->addChild(createMenuItem("Panic", "",
+		menu->addChild(createMenuItem("Reset MIDI (Panic)", "",
 			[=]() {module->midiParser.panic();}
 		));
 

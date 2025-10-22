@@ -272,7 +272,12 @@ struct MIDI_GateWidget : ModuleWidget {
 
 		menu->addChild(new MenuSeparator);
 
-		menu->addChild(createIndexPtrSubmenuItem("Gate amplitude", {
+		menu->addChild(createIndexPtrSubmenuItem("Output type", {
+			"Gates",
+			"Triggers",
+		}, &module->trigMode));
+
+		menu->addChild(createIndexPtrSubmenuItem("Output amplitude", {
 			"10V",
 			"Velocity",
 			"Aftertouch",
@@ -280,11 +285,9 @@ struct MIDI_GateWidget : ModuleWidget {
 
 		menu->addChild(createBoolPtrMenuItem("MPE mode", "", &module->mpeMode));
 
-		menu->addChild(createBoolPtrMenuItem("Trigger mode", "", &module->trigMode));
-
 		menu->addChild(new MenuSeparator);
 
-		menu->addChild(createMenuItem("Panic", "", [=]() {
+		menu->addChild(createMenuItem("Reset MIDI (Panic)", "", [=]() {
 			module->panic();
 		}));
 	}

@@ -238,17 +238,20 @@ std::vector<uint8_t> fromBase64(const std::string& str) {
 }
 
 
-bool CaseInsensitiveCompare::operator()(const std::string& a, const std::string& b) const {
-	for (size_t i = 0;; i++) {
-		char ai = std::tolower(a[i]);
-		char bi = std::tolower(b[i]);
-		if (ai < bi)
-			return true;
-		if (ai > bi)
-			return false;
-		if (!ai || !bi)
-			return false;
+int strcasecmp(const char* s1, const char* s2) {
+	for (size_t i = 0; s1[i] || s2[i]; i++) {
+		// Cast [-128, -1] char to [128, 255] because negative ints are undefined
+		int c1 = std::tolower((unsigned char) s1[i]);
+		int c2 = std::tolower((unsigned char) s2[i]);
+		if (c1 != c2)
+			return c1 - c2;
 	}
+	return 0;
+}
+
+
+bool CaseInsensitiveCompare::operator()(const std::string& a, const std::string& b) const {
+	return strcasecmp(a.c_str(), b.c_str()) < 0;
 }
 
 

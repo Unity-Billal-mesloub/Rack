@@ -2,7 +2,7 @@
 
 In this document, Ctrl means Command (⌘) on Mac.
 
-### 2.6.5 (2025-10-22)
+### 2.6.5 (2025-10-29)
 - Fix occasional jump in knob position immediately after clicking knob on Mac and Windows.
 - Core
 	- *MIDI to CV*

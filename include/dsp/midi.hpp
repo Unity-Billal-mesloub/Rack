@@ -332,13 +332,13 @@ struct MidiParser {
 
 	/** Resets settings and performance state */
 	void reset() {
-		clock = 0;
-		smooth = true;
 		channels = 1;
-		polyMode = ROTATE_MODE;
 		monoMode = LAST_PRIORITY_MODE;
 		retriggerOnResume = false;
+		polyMode = ROTATE_MODE;
+		releaseVelocityEnabled = false;
 		pwRange = 2.f;
+		smooth = true;
 		clockDivision = 24;
 		setFilterLambda(30.f);
 		panic();
@@ -346,6 +346,8 @@ struct MidiParser {
 
 	/** Resets performance state */
 	void panic() {
+		clock = 0;
+		pedal = false;
 		for (uint8_t c = 0; c < MAX_CHANNELS; c++) {
 			// Middle C
 			notes[c] = 60;
@@ -357,7 +359,6 @@ struct MidiParser {
 			pwFilters[c].reset();
 			modFilters[c].reset();
 		}
-		pedal = false;
 		rotateIndex = -1;
 		heldNotes.clear();
 	}

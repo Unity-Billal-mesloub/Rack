@@ -2,6 +2,10 @@
 
 In this document, Ctrl means Command (⌘) on Mac.
 
+### 2.6.6 (2025-11-04)
+- Correctly handle up, down, home, and end keys in multi-line text fields.
+- Add `spotlightBrightness` and `spotlightRadius` properties to `settings.json`.
+
 ### 2.6.5 (2025-10-29)
 - Fix occasional jump in knob position immediately after clicking knob on Mac and Windows.
 - Core

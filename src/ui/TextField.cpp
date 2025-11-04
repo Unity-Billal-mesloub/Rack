@@ -198,10 +198,21 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		}
 		// Up (placeholder)
 		if (e.isKeyCommand(GLFW_KEY_UP)) {
+			string::Location location = string::positionToLocation(text, cursor);
+			if (location.line == 0)
+				location.column = 0;
+			else
+				location.line--;
+			cursor = locationToPosition(text, location);
+			selection = cursor;
 			e.consume(this);
 		}
 		// Down (placeholder)
 		if (e.isKeyCommand(GLFW_KEY_DOWN)) {
+			string::Location location = string::positionToLocation(text, cursor);
+			location.line++;
+			cursor = locationToPosition(text, location);
+			selection = cursor;
 			e.consume(this);
 		}
 		// Home

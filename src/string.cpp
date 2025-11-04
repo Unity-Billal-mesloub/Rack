@@ -155,6 +155,52 @@ bool endsWith(const std::string& str, const std::string& suffix) {
 }
 
 
+Location positionToLocation(const std::string& s, size_t pos) {
+	if (pos > s.size())
+		pos = s.size();
+
+	// Count number of newlines until pos
+	size_t line = 0;
+	size_t linePos = 0;
+	for (size_t i = 0; i < pos; i++) {
+		if (s[i] == '\n') {
+			line++;
+			linePos = i + 1;
+		}
+	}
+
+	// Count number of codepoints from line until pos
+	size_t column = 0;
+	for (size_t i = linePos; i < pos;) {
+		i = UTF8NextCodepoint(s, i);
+		column++;
+	}
+
+	return {line, column};
+}
+
+
+size_t locationToPosition(const std::string& s, Location location) {
+	size_t pos = 0;
+
+	// Advance `location.line` newlines
+	for (size_t lines = 0; lines < location.line && pos < s.size(); pos++) {
+		if (s[pos] == '\n')
+			lines++;
+	}
+
+	// Advance `location.column` codepoints
+	for (size_t columns = 0; columns < location.column && pos < s.size(); columns++) {
+		// Stop if column is beyond newline
+		if (s[pos] == '\n')
+			break;
+		pos = UTF8NextCodepoint(s, pos);
+	}
+
+	return pos;
+}
+
+
 std::string toBase64(const uint8_t* data, size_t dataLen) {
 	static const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 

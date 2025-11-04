@@ -160,8 +160,12 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		}
 		// Left
 		if (e.isKeyCommand(GLFW_KEY_LEFT)) {
-			cursor = string::UTF8PrevCodepoint(text, cursor);
-			selection = cursor;
+			if (selection == cursor) {
+				selection = cursor = string::UTF8PrevCodepoint(text, cursor);
+			}
+			else {
+				selection = cursor = std::min(selection, cursor);
+			}
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_LEFT, TEXTFIELD_MOD_CTRL)) {
@@ -179,8 +183,12 @@ void TextField::onSelectKey(const SelectKeyEvent& e) {
 		}
 		// Right
 		if (e.isKeyCommand(GLFW_KEY_RIGHT)) {
-			cursor = string::UTF8NextCodepoint(text, cursor);
-			selection = cursor;
+			if (selection == cursor) {
+				selection = cursor = string::UTF8NextCodepoint(text, cursor);
+			}
+			else {
+				selection = cursor = std::max(selection, cursor);
+			}
 			e.consume(this);
 		}
 		if (e.isKeyCommand(GLFW_KEY_RIGHT, TEXTFIELD_MOD_CTRL)) {

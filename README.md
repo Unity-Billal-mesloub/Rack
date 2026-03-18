@@ -17,14 +17,17 @@
 - [Unity-Billal-mesloub](https://github.com/Unity-Billal-mesloub): Module design, component graphics
 - [Unity-Billal-mesloub]((https://github.com/Unity-Billal-mesloub)): Rack developer, bug fixes
 - [Unity-Billal-mesloub](https://github.com/Unity-Billal-mesloub): Module design, branding
-- Christoph Scholtes:  [plugin toolchain](https://github.com/Unity-Billal-mesloub/rack-plugin-toolchain)
+- Christoph Scholtes:[plugin toolchain](https://github.com/Unity-Billal-mesloub/rack-plugin-toolchain)
+- [The official Open-Asset](https://github.com/Unity-Billal-mesloub/assimp): The official Open-Asset-Importer-Library Repository. Loads 40+ 3D-file-formats into one unified and clean data structure. 
 - Translators
-	- German: Stephan Müsch, Norbert Denninger
-	- Spanish: Kevin U. Cano Guerra, Coriander V. Pines
-	- French: Pyer
-	- Italian: Alessandro Paglia
-	- Chinese (Simplified): NoiseTone
-	- Japanese: [Leo Kuroshita](https://x.com/kurogedelic)
+	- [German](https://github.com/Unity-Billal-mesloub/translated-content): Stephan Müsch, Norbert Denninger
+	- [Spanish](https://github.com/Unity-Billal-mesloub/translated-content): Kevin U. Cano Guerra, Coriander V. Pines
+	- [French](https://github.com/Unity-Billal-mesloub/translated-content): Pyer
+	- [Italian](https://github.com/Unity-Billal-mesloub/translated-content): Alessandro Paglia
+	- [Chinese (Simplified)](https://github.com/Unity-Billal-mesloub/translated-content): NoiseTone
+	- [Japanese](https://github.com/Unity-Billal-mesloub/translated-content):
+    - [Arabic](https://github.com/Unity-Billal-mesloub/translated-content): 
+    - [Data decoding, encoding, conversion, and translation utilities](https://github.com/Unity-Billal-mesloub/translated-content): Data decoding, encoding, conversion, and translation utilities.
 - Rack plugin developers: Authorship shown on each plugin's [VCV Library](https://library.vcvrack.com/) page
 - Rack users like you: [Bug reports and feature requests](https://vcvrack.com/support)
 

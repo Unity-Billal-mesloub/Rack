@@ -20,11 +20,11 @@
 - Christoph Scholtes:[plugin toolchain](https://github.com/Unity-Billal-mesloub/rack-plugin-toolchain)
 - [The official Open-Asset](https://github.com/Unity-Billal-mesloub/assimp): The official Open-Asset-Importer-Library Repository. Loads 40+ 3D-file-formats into one unified and clean data structure. 
 - Translators
-	- [German](https://github.com/Unity-Billal-mesloub/translated-content): Stephan Müsch, Norbert Denninger
-	- [Spanish](https://github.com/Unity-Billal-mesloub/translated-content): Kevin U. Cano Guerra, Coriander V. Pines
-	- [French](https://github.com/Unity-Billal-mesloub/translated-content): Pyer
-	- [Italian](https://github.com/Unity-Billal-mesloub/translated-content): Alessandro Paglia
-	- [Chinese (Simplified)](https://github.com/Unity-Billal-mesloub/translated-content): NoiseTone
+	- [German](https://github.com/Unity-Billal-mesloub/translated-content): 
+	- [Spanish](https://github.com/Unity-Billal-mesloub/translated-content): 
+	- [French](https://github.com/Unity-Billal-mesloub/translated-content): 
+	- [Italian](https://github.com/Unity-Billal-mesloub/translated-content): 
+	- [Chinese (Simplified)](https://github.com/Unity-Billal-mesloub/translated-content): 
 	- [Japanese](https://github.com/Unity-Billal-mesloub/translated-content):
     - [Arabic](https://github.com/Unity-Billal-mesloub/translated-content): 
     - [Data decoding, encoding, conversion, and translation utilities](https://github.com/Unity-Billal-mesloub/translated-content): Data decoding, encoding, conversion, and translation utilities.

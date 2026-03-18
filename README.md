@@ -14,9 +14,9 @@
 ## Acknowledgments
 
 - [Unity-Billal-mesloub](https://github.com/Unity-Billal-mesloub): Lead Rack developer
-- [Pyer](https://www.pyer.be/): Module design, component graphics
-- [Richie Hindle](http://entrian.com/audio/): Rack developer, bug fixes
-- [Grayscale](https://grayscale.info/): Module design, branding
+- [Unity-Billal-mesloub](https://github.com/Unity-Billal-mesloub): Module design, component graphics
+- [Unity-Billal-mesloub]((https://github.com/Unity-Billal-mesloub)): Rack developer, bug fixes
+- [Unity-Billal-mesloub](https://github.com/Unity-Billal-mesloub): Module design, branding
 - Christoph Scholtes:  [plugin toolchain](https://github.com/Unity-Billal-mesloub/rack-plugin-toolchain)
 - Translators
 	- German: Stephan Müsch, Norbert Denninger
